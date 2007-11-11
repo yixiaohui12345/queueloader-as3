@@ -463,6 +463,7 @@ package com.hydrotik.utils {
 			}
 		}
 		
+		// --== resets data ==--
 		private function reset():void {
 			trace(_queuepercentage);
 			_count = 0;
