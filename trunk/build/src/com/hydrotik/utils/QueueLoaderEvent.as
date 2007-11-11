@@ -32,6 +32,8 @@ package com.hydrotik.utils {
 	*/
 	public class QueueLoaderEvent extends Event {
 		
+		// Event types
+		
 		public static var ITEM_START 				:String = "itemStart";
 		
 		public static var ITEM_PROGRESS    			:String = "itemProgress";
@@ -45,6 +47,8 @@ package com.hydrotik.utils {
 		public static var QUEUE_PROGRESS    		:String = "queueProgress";
 		
 		public static var QUEUE_INIT    			:String = "queueInit";
+		
+		// Public properties
 		
 		public var targ:*;
 		
