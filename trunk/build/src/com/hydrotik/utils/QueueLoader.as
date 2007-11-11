@@ -450,6 +450,7 @@ package com.hydrotik.utils {
 			
 		}
 		
+		//--== checks for completion ==--
 		private function isQueueComplete():void {
 			if (!isStopped) {		
 				if (queuedItems.length == 0) {	
@@ -462,6 +463,7 @@ package com.hydrotik.utils {
 				}			
 			}
 		}
+		
 		
 		// --== resets data ==--
 		private function reset():void {
