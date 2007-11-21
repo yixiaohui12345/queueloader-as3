@@ -80,9 +80,11 @@ package com.hydrotik.utils {
 		
 		public var message:String = "";
 		
+		public var bmArray:Array;
+		
 		public var dataObj:Object = null;
 
-		public function QueueLoaderEvent( type:String, targ:*, file:*, path:String = "",  title:String = "", filetype:int = QueueLoader.FILE_IMAGE, bytesLoaded:Number=-1, bytesTotal:Number=-1, percentage:Number=-1, queuepercentage:Number = 0, width:Number = 0, height:Number = 0, message:String="", count:int = 0, length:int = 0, max:int = 0, dataObj:Object = null, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function QueueLoaderEvent( type:String, targ:*, file:*, path:String = "",  title:String = "", filetype:int = QueueLoader.FILE_IMAGE, bytesLoaded:Number=-1, bytesTotal:Number=-1, percentage:Number=-1, queuepercentage:Number = 0, width:Number = 0, height:Number = 0, message:String="", count:int = 0, length:int = 0, max:int = 0, bmArray:Array = null, dataObj:Object = null, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super( type, bubbles, cancelable );
 			this.targ = targ;
 			this.file = file;
@@ -99,6 +101,7 @@ package com.hydrotik.utils {
 			this.width = width;
 			this.height = height;
 			this.message = message;
+			this.bmArray = bmArray;
 			this.dataObj = dataObj;
 		}
 	}
