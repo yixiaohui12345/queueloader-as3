@@ -24,68 +24,65 @@
  */
 
 package com.hydrotik.utils {
-	
 	import flash.events.Event;
 
 	/**
-	* Custom Event Class for QueueLoader
-	*/
+	 * Custom Event Class for QueueLoader
+	 */
 	public class QueueLoaderEvent extends Event {
-		
-		// Event types
-		
-		public static var ITEM_START 				:String = "itemStart";
-		
-		public static var ITEM_PROGRESS    			:String = "itemProgress";
-		
-		public static var ITEM_INIT    				:String = "itemInit";
-		
-		public static var ITEM_ERROR				:String = "itemError";
-		
-		public static var QUEUE_START 				:String = "queueStart";
-		
-		public static var QUEUE_PROGRESS    		:String = "queueProgress";
-		
-		public static var QUEUE_INIT    			:String = "queueInit";
-		
-		// Public properties
-		
-		public var targ:*;
-		
-		public var title:String = "";
-		
-		public var filetype:int;
-		
-		public var file:*;
-		
-		public var path:String;
-		
-		public var bytesLoaded:Number = -1;
-		
-		public var bytesTotal:Number = -1;	
-		
-		public var percentage:Number = 0;
-		
-		public var queuepercentage:Number = 0;
-		
-		public var count:int;	
-		
-		public var length:int;
-		
-		public var max:int;
-		
-		public var width:Number;
-		
-		public var height:Number;
-		
-		public var message:String = "";
-		
-		public var bmArray:Array;
-		
-		public var dataObj:Object = null;
 
-		public function QueueLoaderEvent( type:String, targ:*, file:*, path:String = "",  title:String = "", filetype:int = QueueLoader.FILE_IMAGE, bytesLoaded:Number=-1, bytesTotal:Number=-1, percentage:Number=-1, queuepercentage:Number = 0, width:Number = 0, height:Number = 0, message:String="", count:int = 0, length:int = 0, max:int = 0, bmArray:Array = null, dataObj:Object = null, bubbles:Boolean=false, cancelable:Boolean=false) {
-			super( type, bubbles, cancelable );
+		// Event types
+		public static var ITEM_START : String = "itemStart";
+
+		public static var ITEM_PROGRESS : String = "itemProgress";
+
+		public static var ITEM_INIT : String = "itemInit";
+
+		public static var ITEM_ERROR : String = "itemError";
+
+		public static var QUEUE_START : String = "queueStart";
+
+		public static var QUEUE_PROGRESS : String = "queueProgress";
+
+		public static var QUEUE_INIT : String = "queueInit";
+
+		// Public properties
+		public var targ : *;
+
+		public var title : String = "";
+
+		public var filetype : int;
+
+		public var file : *;
+
+		public var path : String;
+
+		public var bytesLoaded : Number = -1;
+
+		public var bytesTotal : Number = -1;	
+
+		public var percentage : Number = 0;
+
+		public var queuepercentage : Number = 0;
+
+		public var count : int;	
+
+		public var length : int;
+
+		public var max : int;
+
+		public var width : Number;
+
+		public var height : Number;
+
+		public var message : String = "";
+
+		public var bmArray : Array;
+
+		public var dataObj : Object = null;
+
+		public function QueueLoaderEvent( type : String, targ : *, file : *, path : String = "",  title : String = "", filetype : int = QueueLoader.FILE_IMAGE, bytesLoaded : Number = -1, bytesTotal : Number = -1, percentage : Number = -1, queuepercentage : Number = 0, width : Number = 0, height : Number = 0, message : String = "", count : int = 0, length : int = 0, max : int = 0, bmArray : Array = null, dataObj : Object = null, bubbles : Boolean = false, cancelable : Boolean = false) {
+			super(type, bubbles, cancelable);
 			this.targ = targ;
 			this.file = file;
 			this.path = path;

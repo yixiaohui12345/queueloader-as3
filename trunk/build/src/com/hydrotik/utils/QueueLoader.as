@@ -35,24 +35,24 @@ package com.hydrotik.utils {
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
-	
+
 	import com.hydrotik.utils.QueueLoaderEvent;	
 
 	import flash.display.MovieClip;	
 	import flash.display.BitmapData;	
 	import flash.geom.Matrix;	
 	import flash.utils.setTimeout;	
-	
+
 	public class QueueLoader implements IEventDispatcher {
 
 		// Colophon
-
-		public static const VERSION : String = "QueueLoader 3.0.9";
+		public static const VERSION : String = "QueueLoader 3.0.10";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
-		// List of file types
+		public static var VERBOSE : Boolean = true;
 
+		// List of file types
 		public static const FILE_IMAGE : int = 1;
 
 		public static const FILE_SWF : int = 2;
@@ -64,10 +64,7 @@ package com.hydrotik.utils {
 		public static const FILE_XML : int = 5;
 
 		// Private
-
-		private var _loader : Loader;
-
-		private var _uLoader : URLLoader;
+		private var _loader : *;
 
 		private var queuedItems : Array;
 
@@ -102,18 +99,26 @@ package com.hydrotik.utils {
 		private var _setMIMEType : Boolean;
 
 		private var _w : int;
-		
+
 		private var _h : int;
-		
+
 		private var _bmFrames : int;
+
+		private var _bmArray : Array;
+
+		private var _currFrame : int = 1;
+
+		private var debug : Function;
 		
+		private var _framerate : Number;
+
 		/**
 		 * QueueLoader AS 3
 		 *
 		 * @author: Donovan Adams, E-Mail: donovan[(at)]hydrotik.com, url: http://www.hydrotik.com/
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de
 		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa
-		 * @version: 3.0.9
+		 * @version: 3.0.10
 		 *
 		 * @description QueueLoader is a linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation.
 		 *
@@ -134,63 +139,64 @@ package com.hydrotik.utils {
 		 * @history 10.29.2007 - 3.0.7 Added LoaderContext for accessing loaded class references/Added stopping of loading/Loader unloading of memory for Garbage Collection
 		 * @history 10.29.2007 - 3.0.8 Added CSS/XML filetype, Optimized Loader, removeItemAt, function sorting
 		 * @history 11.15.2007 - 3.0.9 Manual MIME type, pass dataObj, index based reordering, frame drawing of external swf
+		 * @history 12.3.2007 - 3.0.10 Testing and formatting of frame drawing
 		 *
 		 * @example This example shows how to use QueueLoader in a basic application:
-			<code>
-				import com.hydrotik.utils.QueueLoader;
-				import com.hydrotik.utils.QueueLoaderEvent;
+		<code>
+		import com.hydrotik.utils.QueueLoader;
+		import com.hydrotik.utils.QueueLoaderEvent;
 							
 							
-				//Instantiate the QueueLoader
-				var _oLoader:QueueLoader = new QueueLoader();
+		//Instantiate the QueueLoader
+		var _oLoader:QueueLoader = new QueueLoader();
 							
-				//Run a loop that loads 3 images from the flashassets/images/slideshow folder
-				var image:Sprite = new Sprite();
-				addChild(image);
-				//Add a load item to the loader
-				_oLoader.addItem(prefix("") + "flashassets/images/slideshow/1.jpg", image, {title:"Image"});
+		//Run a loop that loads 3 images from the flashassets/images/slideshow folder
+		var image:Sprite = new Sprite();
+		addChild(image);
+		//Add a load item to the loader
+		_oLoader.addItem(prefix("") + "flashassets/images/slideshow/1.jpg", image, {title:"Image"});
 							
-				//Add event listeners to the loader
-				_oLoader.addEventListener(QueueLoaderEvent.QUEUE_START, onQueueStart, false, 0, true);
-				_oLoader.addEventListener(QueueLoaderEvent.ITEM_START, onItemStart, false, 0, true);
-				_oLoader.addEventListener(QueueLoaderEvent.ITEM_PROGRESS, onItemProgress, false, 0, true);
-				_oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
-				_oLoader.addEventListener(QueueLoaderEvent.ITEM_ERROR, onItemError,false, 0, true);
-				_oLoader.addEventListener(QueueLoaderEvent.QUEUE_PROGRESS, onQueueProgress, false, 0, true);
-				_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+		//Add event listeners to the loader
+		_oLoader.addEventListener(QueueLoaderEvent.QUEUE_START, onQueueStart, false, 0, true);
+		_oLoader.addEventListener(QueueLoaderEvent.ITEM_START, onItemStart, false, 0, true);
+		_oLoader.addEventListener(QueueLoaderEvent.ITEM_PROGRESS, onItemProgress, false, 0, true);
+		_oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
+		_oLoader.addEventListener(QueueLoaderEvent.ITEM_ERROR, onItemError,false, 0, true);
+		_oLoader.addEventListener(QueueLoaderEvent.QUEUE_PROGRESS, onQueueProgress, false, 0, true);
+		_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
 							
-				//Run the loader
-				_oLoader.execute();
+		//Run the loader
+		_oLoader.execute();
 							
-				//Listener functions
-				function onQueueStart(event:QueueLoaderEvent):void {
-					trace(">> "+event.type);
-				}
+		//Listener functions
+		function onQueueStart(event:QueueLoaderEvent):void {
+		trace(">> "+event.type);
+		}
 							
-				function onItemStart(event:QueueLoaderEvent):void {
-					trace("\t>> "+event.type, "item title: "+event.title);
-				}
+		function onItemStart(event:QueueLoaderEvent):void {
+		trace("\t>> "+event.type, "item title: "+event.title);
+		}
 							
-				function onItemProgress(event:QueueLoaderEvent):void {
-					trace("\t>> "+event.type+": "+[" percentage: "+event.percentage]);
-				}
+		function onItemProgress(event:QueueLoaderEvent):void {
+		trace("\t>> "+event.type+": "+[" percentage: "+event.percentage]);
+		}
 							
-				function onQueueProgress(event:QueueLoaderEvent):void {
-					trace("\t>> "+event.type+": "+[" queuepercentage: "+event.queuepercentage]);
-				}
+		function onQueueProgress(event:QueueLoaderEvent):void {
+		trace("\t>> "+event.type+": "+[" queuepercentage: "+event.queuepercentage]);
+		}
 							
-				function onItemInit(event:QueueLoaderEvent):void {
-					trace("\t>> name: "+event.title + " event:" + event.type+" - "+["target: "+event.targ, "w: "+event.width, "h: "+event.height]+"\n");
-				}
+		function onItemInit(event:QueueLoaderEvent):void {
+		trace("\t>> name: "+event.title + " event:" + event.type+" - "+["target: "+event.targ, "w: "+event.width, "h: "+event.height]+"\n");
+		}
 							
-				function onItemError(event:QueueLoaderEvent):void {
-					trace("\n>>"+event.message+"\n");
-				}
+		function onItemError(event:QueueLoaderEvent):void {
+		trace("\n>>"+event.message+"\n");
+		}
 							
-				function onQueueInit(event:QueueLoaderEvent):void {
-					trace("** "+event.type);
-				}
-			</code>
+		function onQueueInit(event:QueueLoaderEvent):void {
+		trace("** "+event.type);
+		}
+		</code>
 		 */  
 		/**
 		 * @param	ignoreErrors:Boolean false for stopping the queue on an error, true for ignoring errors.
@@ -201,17 +207,15 @@ package com.hydrotik.utils {
 		 */
 		public function QueueLoader(ignoreErrors : Boolean = false, loaderContext : LoaderContext = null, setMIMEType : Boolean = false) {
 			dispatcher = new EventDispatcher(this);
+			debug = trace;
+			debug(">> new QueueLoader()");
 			reset();
 			_loaderContext = loaderContext;
 			_loader = new Loader();
-			_uLoader = new URLLoader();
 			_bmArray = new Array();
 			_ignoreErrors = ignoreErrors;
 			_setMIMEType = setMIMEType;
-			configureListeners(_loader.contentLoaderInfo);
 		}
-		
-
 		/**
 		 * @param	url:String - asset file path
 		 * @param	targ:* - target location
@@ -220,10 +224,9 @@ package com.hydrotik.utils {
 		 * @description Adds an item to the loading queue
 		 */
 		public function addItem(url : String, targ : *, info : Object) : void {
+			if(VERBOSE) debug(">> addItem() args:" + [url, targ, info]);
 			addItemAt(queuedItems.length, url, targ, info);
 		}
-		
-		private var _bmArray : Array;
 
 		/**
 		 * @param	index:Number - insertion index
@@ -234,11 +237,10 @@ package com.hydrotik.utils {
 		 * @description Adds an item to the loading queue at a specific position
 		 */
 		public function addItemAt(index : Number, url : String, targ : *, info : Object) : void {
+			if(VERBOSE) debug(">> addItemAt() args:" + [index, url, targ, info]);
 			queuedItems.splice(index, 0, {url:url, targ:targ, info:info});
 			itemsToInit.splice(index, 0, {url:url, targ:targ, info:info});
 			if(isLoading && !isStarted && !isStopped) _max++;
-			
-			trace("______________== MAX: " + _max);
 		}
 
 		/**
@@ -247,10 +249,10 @@ package com.hydrotik.utils {
 		 * @description Removes an item to the loading queue at a specific position
 		 */
 		public function removeItemAt(index : Number) : void {
+			if(VERBOSE) debug(">> removeItem() args:" + [index]);
 			queuedItems.splice(index, 1);
 			itemsToInit.splice(index, 1);
 			if(isLoading && isStarted && isStopped) _max--;
-			trace("______________== MAX: " + _max);
 		}
 
 		/**
@@ -259,6 +261,7 @@ package com.hydrotik.utils {
 		 * @description allows input of a sort function for sorting the array see Array.sort();
 		 */
 		public function sort(... args) : void {
+			if(VERBOSE) debug(">> sort() args:" + [args]);
 			queuedItems.sort(args);
 			itemsToInit.sort(args);
 		}
@@ -267,8 +270,14 @@ package com.hydrotik.utils {
 		 * @param index:Number - reorder index
 		 * @return void
 		 * @description reorders the queue based based on a specific position
+		 * 
+		 * 
+		 * IN TESTING
+		 * 
+		 * 
 		 */
 		public function reorder(index : Number) : void {
+			if(VERBOSE) debug(">> reorder() args:" + [index]);
 			var _closed : Boolean = false;
 			// stop any loading that's currently going on
 			if(this.isLoading == true && _loader !== null)
@@ -301,6 +310,7 @@ package com.hydrotik.utils {
 		 * @return	void
 		 */
 		public function execute() : void {
+			debug(">> execute()");
 			isStarted = true;
 			isLoading = true;
 			isStopped = false;
@@ -308,42 +318,40 @@ package com.hydrotik.utils {
 			loadNextItem();	
 		}
 
-		
-		
 		/**
 		 * @description Stops Loading
 		 * @return	void
 		 */
 		public function stop() : void {
+			if(VERBOSE) debug(">> stop()");
 			isStarted = true;
 			isLoading = false;
 			isStopped = true;	
 			reset();
 		}
 
-		
 		/**
 		 * @description Removes Items Loaded from memory for Garbage Collection
 		 */
 		public function dispose() : void {
-			var i:int;
+			if(VERBOSE) debug(">> dispose()");
+			var i : int;
 			for(i = 0;i < loadedItems.length;i++) {
 				loadedItems[i].loaderInfo.loader.unload();
 				loadedItems[i] = null;
 			}
-			for (i = 0; i < _bmArray.length; i++) {
-				_bmArray[i].dispose();
+			for (i = 0;i < _bmArray.length; i++) {
+				_bmArray[i].bitmapData.dispose();
 				_bmArray[i] = null;
 			}
 			_bmArray = null;
 			_loader = null;
+			_currFrame = 1;
 			_max = 0;
 			reset();
 		};
 
-		
 		// --== Implemented interface methods ==--
-
 		public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = true) : void {
 			dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
@@ -364,10 +372,6 @@ package com.hydrotik.utils {
 			return dispatcher.willTrigger(type);
 		}
 
-		
-		
-		
-		
 		// --== Private Methods ==--
 		
 		// --== Listeners and Handlers ==--
@@ -378,8 +382,6 @@ package com.hydrotik.utils {
 			dispatcher.addEventListener(ProgressEvent.PROGRESS, progressHandler, false, 0, true);
 		}
 
-		
-		
 		private function ioErrorHandler(event : IOErrorEvent) : void {
 			if(event.text != "") {
 				dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_ERROR, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 0, _queuepercentage, 0, 0, "io error: " + event.text + " could not be loaded into " + currItem.targ.name, _count, queuedItems.length, _max, currItem.info.dataObj));
@@ -408,17 +410,8 @@ package com.hydrotik.utils {
 		}
 
 		private function completeHandler(event : Event) : void {
-			
-			event.target.removeEventListener(Event.INIT, completeHandler);
-			event.target.removeEventListener(Event.COMPLETE, completeHandler);
-			event.target.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-			event.target.removeEventListener(ProgressEvent.PROGRESS, progressHandler);
-			event.target.removeEventListener(Event.OPEN, openHandler);
-          
-			
-			if(isLoading && !isStopped){
+			if(isLoading && !isStopped) {
 				if(_currType == FILE_XML) {
-					trace("currItem.targ: " + currItem.targ);
 					_currFile = event.target.data;
 					currItem.targ = new XML(_currFile);
 				}
@@ -427,7 +420,7 @@ package com.hydrotik.utils {
 					_currFile = event.target.data;
 				}
 				
-				var checkSWFpause:Boolean;
+				var checkSyncPoint : Boolean;
 				if(_currType == FILE_IMAGE || _currType == FILE_SWF) {
 					var loader : Loader = Loader(event.target.loader);
 					loadedItems.push(loader.content);
@@ -435,30 +428,40 @@ package com.hydrotik.utils {
 					var info : LoaderInfo = LoaderInfo(event.target);
 					_w = info.width;
 					_h = info.height;
-					if(_currType == FILE_SWF && _currFile.totalFrames > 1){
-						trace("call drawSWFFrames()" + _currFile.totalFrames);
-						checkSWFpause = true;
-						drawSWFFrames(_currFile);
-					}else{
-						checkSWFpause = false;
+					if(_currType == FILE_SWF && _currFile.totalFrames > 1 && currItem.info.drawFrames) {
+						_currFile.stop();
+						checkSyncPoint = true;
+						drawSWFFrames();
+					}else {
+						checkSyncPoint = false;
 					}
-				}else{
-					checkSWFpause = false;
+				}else {
+					checkSyncPoint = false;
 				}
-				
-				
-				if(!checkSWFpause) completeInit();
+				if(!checkSyncPoint) completeInit();
 			}
 		}
-		
-		
-		private function completeInit():void{
+
+		private function completeInit() : void {
 			dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_INIT, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 100, _queuepercentage, _w, _h, "", _count, queuedItems.length, _max, _bmArray, currItem.info.dataObj));
 			_count++;
 			isQueueComplete();
 		}
-		
-		//TODO Event firing trouble might be additional loader types
+
+		//--== checks for completion ==--
+		private function isQueueComplete() : void {
+			if (!isStopped) {		
+				if (queuedItems.length == 0) {	
+					isLoading = false;
+					loadedItems = loadedItems;	
+					dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.QUEUE_INIT, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 0, _queuepercentage, 0, 0, "", _count, queuedItems.length, _max, _bmArray, currItem.info.dataObj));
+					//reset()
+				} else {
+					loadNextItem();
+				}			
+			}
+		}
+
 		private function loadNextItem() : void {		
 			currItem = queuedItems.shift();		
 			if (!isStopped) {				
@@ -479,9 +482,9 @@ package com.hydrotik.utils {
 					if(currItem.url.match(".xml") != null) _currType = FILE_XML;
 				}
 				var request : URLRequest = new URLRequest(currItem.url);
+				if(VERBOSE) debug(">> loadNextItem() loading: " + _currType);
 				switch (_currType) {
 					case FILE_IMAGE:
-						trace("Image File");
 						if (currItem.targ == undefined) {	
 							dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_ERROR, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 0, _queuepercentage, 0, 0, "QueueLoader error: " + currItem.info.title + " could not be loaded into " + currItem.targ.name + "/" + currItem.targ.name, _count, queuedItems.length, _max, _bmArray, currItem.info.dataObj));
 						} else {
@@ -492,7 +495,6 @@ package com.hydrotik.utils {
 						}
 						break;
 					case FILE_SWF:
-						trace("External SWF File");
 						if (currItem.targ == undefined) {	
 							dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_ERROR, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 0, _queuepercentage, 0, 0, "QueueLoader error: " + currItem.info.title + " could not be loaded into " + currItem.targ.name + "/" + currItem.targ.name, _count, queuedItems.length, _max, _bmArray, currItem.info.dataObj));
 						} else {
@@ -503,53 +505,35 @@ package com.hydrotik.utils {
 						}
 						break;
 					case FILE_AUDIO:
-						trace("External Audio");
 						currItem.targ.addEventListener(Event.COMPLETE, completeHandler);
 						currItem.targ.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 						currItem.targ.addEventListener(ProgressEvent.PROGRESS, progressHandler);
 						currItem.targ.load(request);
 						break;
 					case FILE_XML:
-						trace("XML");
-						_uLoader = new URLLoader();
-						_uLoader.addEventListener(Event.COMPLETE, completeHandler);
-						_uLoader.addEventListener(ProgressEvent.PROGRESS, progressHandler);
-						_uLoader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-						_uLoader.load(request);
+						_loader = new URLLoader();
+						_loader.addEventListener(Event.COMPLETE, completeHandler);
+						_loader.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+						_loader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+						_loader.load(request);
 						break;
 					case FILE_CSS:
-						trace("CSS");
-						_uLoader = new URLLoader();
-						_uLoader.addEventListener(Event.COMPLETE, completeHandler);
-						_uLoader.addEventListener(ProgressEvent.PROGRESS, progressHandler);
-						_uLoader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-						_uLoader.load(request);
+						_loader = new URLLoader();
+						_loader.addEventListener(Event.COMPLETE, completeHandler);
+						_loader.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+						_loader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+						_loader.load(request);
 						break;
 					default:
-						trace("None Detected");
+						if(VERBOSE) debug(">> loadNextItem() NO TYPE DETECTED!");
 				}
 					//request = null;
 			}	
 		}
 
-		//--== checks for completion ==--
-		private function isQueueComplete() : void {
-			if (!isStopped) {		
-				if (queuedItems.length == 0) {	
-					isLoading = false;
-					loadedItems = loadedItems;	
-					dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.QUEUE_INIT, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 0, _queuepercentage, 0, 0, "", _count, queuedItems.length, _max, _bmArray, currItem.info.dataObj));
-					//reset()
-				} else {
-					loadNextItem();
-				}			
-			}
-		}
-
-		
 		// --== resets data ==--
 		private function reset() : void {
-			trace(_queuepercentage);
+			if(VERBOSE) debug(">> reset()");
 			_count = 0;
 			//loadedItems = null;
 			_queuepercentage = 0;
@@ -561,33 +545,43 @@ package com.hydrotik.utils {
 			_currFile = null;	
 			_max = 0;
 			_queuepercentage = 0;
-			
+			_currFrame = 1;
 			if(dispatcher.hasEventListener(Event.INIT) && dispatcher != null) dispatcher.removeEventListener(Event.INIT, completeHandler);
 			if(dispatcher.hasEventListener(IOErrorEvent.IO_ERROR) && dispatcher != null) dispatcher.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 			if(dispatcher.hasEventListener(Event.OPEN) && dispatcher != null) dispatcher.removeEventListener(Event.OPEN, openHandler);
 			if(dispatcher.hasEventListener(ProgressEvent.PROGRESS) && dispatcher != null) dispatcher.removeEventListener(ProgressEvent.PROGRESS, progressHandler);
 		}
-		
+
 		//TODO Needs testing
-		private function drawSWFFrames(item:MovieClip):void{
+		private function drawSWFFrames() : void {
+			if(VERBOSE) debug(">> drawSWFFrames() args: " + _currFile);
 			_bmArray = new Array();
-			_bmFrames = item.totalFrames;
-			setTimeout(drawFrame, 310, item);
+			_bmFrames = _currFile.totalFrames;
+			_currFile.stop();
+			//drawFrame(item);
+			
+			
+			_framerate = _currFile.stage.frameRate;
+			_currFile.stage.frameRate = 10;
+			_currFile.addEventListener( Event.ENTER_FRAME, drawFrame );
+			trace(_currFile.stage.frameRate);
 		}
-		
-		private function drawFrame(item:MovieClip):void{
-			trace("drawFrame() current frame: "+item.currentFrame);
-			var bd:BitmapData = new BitmapData( item.width, item.height, false, 0xFFFF0000);
-			bd.draw(item, new Matrix(), null, null, null, true );
+
+		private function drawFrame(event:Event) : void {
+			if(VERBOSE) debug("\t>> drawFrame() args: " + [_currFile, _currFrame, _bmFrames]);
+			
+			_currFrame = _currFile.currentFrame;
+			var bd : BitmapData = new BitmapData(_currFile.width, _currFile.height, false, 0xFFFF0000);
+			bd.draw(_currFile, new Matrix(), null, null, null, true);
 				
 			_bmArray.push(bd);
 			
-			if(item.currentFrame == _bmFrames){
-				trace("\t\t\t>>> bmArray.length: "+[_bmArray.length]);
+			if(_currFrame == _bmFrames) {
+				_currFile.removeEventListener( Event.ENTER_FRAME, drawFrame );
+				_currFile.stage.frameRate = _framerate;
 				completeInit();
-			}else{
-				item.gotoAndStop(item.currentFrame + 1);
-				setTimeout(drawFrame, 310, item);
+			}else {
+				_currFile.gotoAndStop(_currFrame + 1);
 			}
 		}
 	}
