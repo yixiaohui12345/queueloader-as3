@@ -1,0 +1,246 @@
+#Here's a general guide to the current features in QueueLoader
+
+= Introduction =
+
+Here's a general guide to the features currently in QueueLoader
+
+
+= Details =
+
+*Basic Loading*
+{{{
+import com.hydrotik.utils.QueueLoader;
+import com.hydrotik.utils.QueueLoaderEvent;
+
+var _oLoader:QueueLoader = new QueueLoader();
+var img = new Sprite();
+addChild(img);
+_oLoader.addItem("images/image1.jpg"), img, {title:"Image "});
+_oLoader.execute();
+}}}
+
+*Load Monitoring*
+{{{
+import com.hydrotik.utils.QueueLoader;
+import com.hydrotik.utils.QueueLoaderEvent;
+
+var _oLoader:QueueLoader = new QueueLoader();
+var img1 = new Sprite();
+addChild(img1);
+_oLoader.addItem("images/image1.jpg"), img1, {title:"Image 1"});
+var img2 = new Sprite();
+addChild(img2);
+_oLoader.addItem("images/image2.jpg"), img2, {title:"Image 2"});
+
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_START, onQueueStart, false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_START, onItemStart, false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_PROGRESS, onItemProgress, false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_ERROR, onItemError,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_PROGRESS, onQueueProgress, false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+_oLoader.execute();
+
+//Listener functions
+function onQueueStart(event:QueueLoaderEvent):void {
+	trace(">> "+event.type);
+	
+}
+
+function onItemStart(event:QueueLoaderEvent):void {
+	trace("\t>> "+event.type, "item title: "+event.title);
+}
+
+function onItemProgress(event:QueueLoaderEvent):void {
+	trace("\t>> "+event.type+": "+[" percentage: "+event.percentage]);
+}
+
+function onQueueProgress(event:QueueLoaderEvent):void {
+	trace("\t>> "+event.type+": "+[" queuepercentage: "+event.queuepercentage]);
+}
+
+function onItemInit(event:QueueLoaderEvent):void {
+	trace("\n>>"+event.message+"\n");
+}
+
+function onItemError(event:QueueLoaderEvent):void {
+	trace("\n>>"+event.message+"\n");
+}
+
+function onQueueInit(event:QueueLoaderEvent):void {
+	trace("\n>>"+event.message+"\n");
+}
+}}}
+
+
+*Manually specifying a MIME type*
+{{{
+import com.hydrotik.utils.QueueLoader;
+import com.hydrotik.utils.QueueLoaderEvent;
+
+var _oLoader:QueueLoader = new QueueLoader();
+var img = new Sprite();
+addChild(img);
+_oLoader.addItem("images/image1.jpg"), img, {title:"Image ", mimeType:QueueLoader.FILE_IMAGE});
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+_oLoader.execute();
+}}}
+
+*Loading XML*
+{{{
+import com.hydrotik.utils.QueueLoader;
+import com.hydrotik.utils.QueueLoaderEvent;
+
+var _oLoader:QueueLoader = new QueueLoader();
+var _xml:XML;
+
+_oLoader.addItem("includes/admin/test.xml", null, {title:"XML"});
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
+_oLoader.execute();
+
+function onItemInit(event:QueueLoaderEvent):void {
+	trace("\t>> XML: "+event.type, "item title: "+event.title);
+	if(event.filetype == QueueLoader.FILE_XML){
+		_xml = new XML(event.file);
+	}
+}
+}}}
+
+*Loading CSS*
+{{{
+import com.hydrotik.utils.QueueLoader;
+import com.hydrotik.utils.QueueLoaderEvent;
+
+var _oLoader:QueueLoader = new QueueLoader();
+var _css:StyleSheet = new StyleSheet();
+
+_oLoader.addItem("includes/admin/style.css", null, {title:"CSS"});
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
+_oLoader.execute();
+
+function onItemInit(event:QueueLoaderEvent):void {
+	if(event.filetype == QueueLoader.FILE_CSS){
+		trace("\t>> CSS: "+event.type, "item title: "+event.title);
+		_css.parseCSS(event.file);
+	}
+}
+}}}
+
+
+*Drawing the frames of an external SWF to Bitmap Objects in an Array*
+{{{
+import com.hydrotik.utils.QueueLoader;
+import com.hydrotik.utils.QueueLoaderEvent;
+
+var externalImageBitmapContainer:Bitmap = new Bitmap();
+addChild(externalImageBitmapContainer);
+var externalImageContainer:Sprite = new Sprite();
+addChild(externalImageContainer);
+
+var _oLoader:QueueLoader = new QueueLoader();
+_oLoader.addItem("flashassets/swf/externalimages.swf", externalImageContainer, {title:"externalimages", drawFrames:true});
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+_oLoader.execute();
+
+function onQueueInit(event:QueueLoaderEvent):void {
+	trace("** "+event.type);
+	// This passes a Bitmap object of the 2nd frame
+	// in the external swfstored in bmArray
+	externalImageBitmapContainer.bitmapData = event.bmArray[1];
+}
+}}}
+
+*Accessing Class references in an externally loaded SWF*
+{{{
+import com.hydrotik.utils.QueueLoader;
+import com.hydrotik.utils.QueueLoaderEvent;
+
+var addedDefinitions:LoaderContext = new LoaderContext();
+addedDefinitions.applicationDomain = ApplicationDomain.currentDomain;
+
+var _oLoader:QueueLoader = new QueueLoader(false, addedDefinitions, true);
+
+var soundSWF = new MovieClip();
+soundSWF.name = "externalSounds";
+addChild(soundSWF);
+
+var soundChannel:SoundChannel = new SoundChannel();
+
+_oLoader.addItem(prefix("") + "flashassets/swf/externalsounds.swf", soundSWF, {title:"sounds", drawSWF:false, mimeType:QueueLoader.FILE_SWF});
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+_oLoader.execute();
+
+
+function onQueueInit(event:QueueLoaderEvent):void {
+	trace("** "+event.type);
+	var Loop1Reference:Class = getDefinitionByName("Loop1") as Class;
+	var loop1:Sound = new Loop1Reference();
+	soundChannel = loop1.play();
+}
+}}}
+
+
+*Adding items on the fly*
+{{{
+import com.hydrotik.utils.QueueLoader;
+import com.hydrotik.utils.QueueLoaderEvent;
+
+
+var _oLoader:QueueLoader = new QueueLoader();
+var imageContainer:Sprite = new Sprite();
+addChild(imageContainer);
+
+var _xml:XML;
+
+_oLoader.addItem("includes/admin/test.xml", null, {title:"XML", mimeType:QueueLoader.FILE_XML});
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_START, onQueueStart, false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_START, onItemStart, false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_PROGRESS, onItemProgress, false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_ERROR, onItemError,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_PROGRESS, onQueueProgress, false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+_oLoader.execute();
+
+function onQueueStart(event:QueueLoaderEvent):void {
+	trace("\t>> "+event.type, "item title: "+event.title);
+}
+
+function onItemStart(event:QueueLoaderEvent):void {
+	trace("\t>> "+event.type, "item title: "+event.title);
+}
+
+function onItemProgress(event:QueueLoaderEvent):void {
+	trace("\t>> "+event.type+": "+[" percentage: "+event.percentage]);
+}
+
+function onQueueProgress(event:QueueLoaderEvent):void {
+	trace("\t>> "+event.type+": "+[" queuepercentage: "+event.queuepercentage]);
+}
+
+function onItemInit(event:QueueLoaderEvent):void {
+	trace("\t>> "+event.type, "item title: "+event.title);
+	
+	if (event.filetype == QueueLoader.FILE_XML) {
+		_xml = new XML(event.file);
+		var imageList:XMLList = _xml.images.children();
+		
+		for (var i:int = 0; i < imageList.length(); i++) {
+			var img = new Sprite();
+			imageContainer.addChild(img);
+			_oLoader.addItem(imageList[i].attribute("src"), img, {title:"Image "+i});
+		}
+	}
+}
+
+function onItemError(event:QueueLoaderEvent):void {
+	trace("\n>>"+event.message+"\n");
+}
+
+function onQueueInit(event:QueueLoaderEvent):void {
+	trace("\t>> "+event.type, "item title: "+event.title);
+}
+}}}
+
+
+This covers most of the features in the current rev. More to come!
