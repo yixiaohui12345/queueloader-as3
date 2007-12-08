@@ -36,7 +36,7 @@ package com.hydrotik.utils {
 
 		public static var ITEM_PROGRESS : String = "itemProgress";
 
-		public static var ITEM_INIT : String = "itemInit";
+		public static var ITEM_COMPLETE : String = "itemComplete";
 
 		public static var ITEM_ERROR : String = "itemError";
 
@@ -44,7 +44,7 @@ package com.hydrotik.utils {
 
 		public static var QUEUE_PROGRESS : String = "queueProgress";
 
-		public static var QUEUE_INIT : String = "queueInit";
+		public static var QUEUE_COMPLETE : String = "queueComplete";
 
 		// Public properties
 		public var targ : *;
@@ -81,7 +81,7 @@ package com.hydrotik.utils {
 
 		public var dataObj : Object = null;
 		
-		public var bandwidth:Number = 0;
+		public var bandwidth:Number;
 
 		public function QueueLoaderEvent( type : String, targ : *, file : *, path : String = "",  title : String = "", filetype : int = QueueLoader.FILE_IMAGE, bytesLoaded : Number = -1, bytesTotal : Number = -1, percentage : Number = -1, queuepercentage : Number = 0, width : Number = 0, height : Number = 0, message : String = "", count : int = 0, length : int = 0, max : int = 0, bmArray : Array = null, dataObj : Object = null, bandwidth:Number = 0, bubbles : Boolean = false, cancelable : Boolean = false) {
 			super(type, bubbles, cancelable);
