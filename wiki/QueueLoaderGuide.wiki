@@ -1,11 +1,6 @@
-#Here's a general guide to the current features in QueueLoader
+#summary QueueLoader usage guide
 
-= Introduction =
-
-Here's a general guide to the features currently in QueueLoader
-
-
-= Details =
+=QueueLoader Guide=
 
 *Basic Loading*
 {{{
