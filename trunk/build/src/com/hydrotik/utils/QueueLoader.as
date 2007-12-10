@@ -35,14 +35,15 @@ package com.hydrotik.utils {
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
-
-	import com.hydrotik.utils.QueueLoaderEvent;	
-	
+	import fl.video.VideoPlayer;
+	import fl.video.NCManager;
+	import fl.video.VideoEvent;	
 	import flash.display.BitmapData;	
 	import flash.geom.Matrix;		
 	import flash.utils.getTimer;	
 	import flash.system.Capabilities;	
 	import flash.utils.Timer;
+	import com.hydrotik.utils.QueueLoaderEvent;	
 	
 	[Event(name="ITEM_START", type="com.hydrotik.utils.QueueLoaderEvent")]
 	
@@ -54,7 +55,7 @@ package com.hydrotik.utils {
 
 	[Event(name="ITEM_PROGRESS", type="com.hydrotik.utils.QueueLoaderEvent")]
 
-	[Event(name="TEM_COMPLETE", type="com.hydrotik.utils.QueueLoaderEvent")]
+	[Event(name="ITEM_COMPLETE", type="com.hydrotik.utils.QueueLoaderEvent")]
 
 	[Event(name="ITEM_ERROR", type="com.hydrotik.utils.QueueLoaderEvent")]
 
@@ -64,10 +65,10 @@ package com.hydrotik.utils {
 
 	[Event(name="QUEUE_COMPLETE", type="com.hydrotik.utils.QueueLoaderEvent")]
 	
-	public class QueueLoader implements IEventDispatcher {
 
-		// Colophon
-		public static const VERSION : String = "QueueLoader 3.0.13";
+	public class QueueLoader implements IEventDispatcher {
+		
+		public static const VERSION : String = "QueueLoader 3.0.14";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
@@ -75,7 +76,6 @@ package com.hydrotik.utils {
 
 		public static var VERBOSE_BANDWITH:Boolean = false;
 
-		// List of file types
 		public static const FILE_IMAGE : int = 1;
 
 		public static const FILE_SWF : int = 2;
@@ -88,7 +88,6 @@ package com.hydrotik.utils {
 		
 		public static const FILE_FLV : int = 6;
 
-		// Private
 		private var _loader : *;
 
 		private var queuedItems : Array;
@@ -166,36 +165,25 @@ package com.hydrotik.utils {
 		private var _nowStart : Number = 0;
 		
 		private var _bwChecking : Boolean;
+		
+		private var _forceNCManager:NCManager;
 
 		/**
 		 * QueueLoader AS 3
 		 *
 		 * @author: Donovan Adams, E-Mail: donovan[(at)]hydrotik.com, url: http://www.hydrotik.com/
+		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a>
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de
 		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa
-		 * @version: 3.0.13
+		 * @version: 3.0.14
 		 *
-		 * @description QueueLoader is a linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation.
+		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
-		 * @todo: add FLV loading 
 		 * @todo: bandwith decimal bug
 		 *
-		 * @history 03.08.2007 - 3.0 Initial port to AS3.0 (Donovan Adams)
-		 * @history 03.16.2007 - 3.0.1 Added get method for data
-		 * @history 08.10.2007 - 3.0.2 Rewrote data output using custom event QueueLoaderEvent class.
-		 * @history 08.13.2007 - 3.0.3 Added QueueLoader progress and event.
-		 * @history 08.14.2007 - 3.0.4 Added IO Error event.
-		 * @history 09.10.2007 - 3.0.5 Fixed ITEM_INIT duped dispatching, changed item name to title to match custom event
-		 * @history 09.14.2007 - 3.0.6 Added External mp3 and filetype cheking as well as direct access to file for easier swf access
-		 * @history 10.29.2007 - 3.0.7 Added LoaderContext for accessing loaded class references/Added stopping of loading/Loader unloading of memory for Garbage Collection
-		 * @history 10.29.2007 - 3.0.8 Added CSS/XML filetype, Optimized Loader, removeItemAt, function sorting
-		 * @history 11.15.2007 - 3.0.9 Manual MIME type, pass dataObj, index based reordering, frame drawing of external swf
-		 * @history 12.3.2007 - 3.0.10 Testing and formatting of frame drawing
-		 * @history 12.5.2007 - 3.0.11 Stable Testing, Bandwidth Detection, CacheKilling
-		 * @history 12.8.2007 - 3.0.12 Bandwidth fix with decimal rounding, Bandwidth Constuctor activiation. Event inits changed to complete to reflect internal structure
-		 * @history 12.9.2007 - 3.0.13 Event output
+		 * @history <a href="http://code.google.com/p/queueloader-as3/wiki/ChangeLog" target="blank">Up-To-Date Change Log Information here</a>
 		 *
-		 * @example This example shows how to use QueueLoader in a basic application:
+		 * @example Go to <a href="http://code.google.com/p/queueloader-as3/wiki/QueueLoaderGuide" target="blank">QueueLoader Guide on Google Code</a> for more usage info. This example shows how to use QueueLoader in a basic application:
 		<code>
 		import com.hydrotik.utils.QueueLoader;
 		import com.hydrotik.utils.QueueLoaderEvent;
@@ -214,41 +202,41 @@ package com.hydrotik.utils {
 		_oLoader.addEventListener(QueueLoaderEvent.QUEUE_START, onQueueStart, false, 0, true);
 		_oLoader.addEventListener(QueueLoaderEvent.ITEM_START, onItemStart, false, 0, true);
 		_oLoader.addEventListener(QueueLoaderEvent.ITEM_PROGRESS, onItemProgress, false, 0, true);
-		_oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
+		_oLoader.addEventListener(QueueLoaderEvent.ITEM_COMPLETE, onItemComplete,false, 0, true);
 		_oLoader.addEventListener(QueueLoaderEvent.ITEM_ERROR, onItemError,false, 0, true);
 		_oLoader.addEventListener(QueueLoaderEvent.QUEUE_PROGRESS, onQueueProgress, false, 0, true);
-		_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+		_oLoader.addEventListener(QueueLoaderEvent.QUEUE_COMPLETE, onQueueComplete,false, 0, true);
 							
 		//Run the loader
 		_oLoader.execute();
 							
 		//Listener functions
 		function onQueueStart(event:QueueLoaderEvent):void {
-		trace(">> "+event.type);
+			trace(">> "+event.type);
 		}
 							
 		function onItemStart(event:QueueLoaderEvent):void {
-		trace("\t>> "+event.type, "item title: "+event.title);
+			trace("\t>> "+event.type, "item title: "+event.title);
 		}
 							
 		function onItemProgress(event:QueueLoaderEvent):void {
-		trace("\t>> "+event.type+": "+[" percentage: "+event.percentage]);
+			trace("\t>> "+event.type+": "+[" percentage: "+event.percentage]);
 		}
 							
 		function onQueueProgress(event:QueueLoaderEvent):void {
-		trace("\t>> "+event.type+": "+[" queuepercentage: "+event.queuepercentage]);
+			trace("\t>> "+event.type+": "+[" queuepercentage: "+event.queuepercentage]);
 		}
 							
-		function onItemInit(event:QueueLoaderEvent):void {
-		trace("\t>> name: "+event.title + " event:" + event.type+" - "+["target: "+event.targ, "w: "+event.width, "h: "+event.height]+"\n");
+		function onItemComplete(event:QueueLoaderEvent):void {
+			trace("\t>> name: "+event.type + " event:" + event.type+" - "+["target: "+event.targ, "w: "+event.width, "h: "+event.height]+"\n");
 		}
 							
 		function onItemError(event:QueueLoaderEvent):void {
-		trace("\n>>"+event.message+"\n");
+			trace("\n>>"+event.type+"\n");
 		}
 							
-		function onQueueInit(event:QueueLoaderEvent):void {
-		trace("** "+event.type);
+		function onQueueComplete(event:QueueLoaderEvent):void {
+			trace("** "+event.type);
 		}
 		</code>
 		 */  
@@ -331,7 +319,7 @@ package com.hydrotik.utils {
 		/**
 		 * @param index:Number - reorder index
 		 * @return void
-		 * @description reorders the queue based based on a specific position
+		 * @description IN TESTING - reorders the queue based based on a specific position
 		 * 
 		 */
 		public function reorder(index : Number) : void {
@@ -392,6 +380,7 @@ package com.hydrotik.utils {
 
 		/**
 		 * @description Removes Items Loaded from memory for Garbage Collection
+		 * @return	void
 		 */
 		public function dispose() : void {
 			if(VERBOSE) debug(">> dispose()");
@@ -517,6 +506,7 @@ package com.hydrotik.utils {
 			if(isLoading && !isStopped) {
 				if(_currType == FILE_XML) _currFile = event.target.data;
 				if(_currType == FILE_CSS) _currFile = event.target.data;
+				if(_currType == FILE_FLV) _currFile = _loader;
 				
 				var checkSyncPoint : Boolean = false;
 				if(_currType == FILE_IMAGE || _currType == FILE_SWF) {
@@ -573,7 +563,6 @@ package com.hydrotik.utils {
 					if(currItem.url.match(".mp4") != null) _currType = FILE_AUDIO;
 					if(currItem.url.match(".css") != null) _currType = FILE_CSS;
 					if(currItem.url.match(".xml") != null) _currType = FILE_XML;
-					//TODO Add flv functionality
 					if(currItem.url.match(".flv") != null) _currType = FILE_FLV;
 				}
 				
@@ -625,6 +614,18 @@ package com.hydrotik.utils {
 						_loader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 						_loader.load(request);
 						break;
+					case FILE_FLV:
+						_loader = new VideoPlayer();
+						_loader.addEventListener(VideoEvent.READY, completeHandler);
+						_loader.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+						_loader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+			            _loader.load(currItem.url);
+			            currItem.targ.addChild(_loader);
+						break;
+						
+						
+						
+					
 					default:
 						if(VERBOSE) debug(">> loadNextItem() NO TYPE DETECTED!");
 				}
