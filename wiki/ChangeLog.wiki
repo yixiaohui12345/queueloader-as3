@@ -17,3 +17,4 @@
   * *12.8.2007* - *3.0.12* Bandwidth fix with decimal rounding, Bandwidth Constuctor activiation. Event inits changed to complete to reflect internal structure
   * *12.9.2007* - *3.0.13* Event output
   * *12.9.2007* - *3.0.14* FLV Support using VideoPlayer, static debug access for compatibility.
+  * *12.10.2007* - *3.0.18* SVN sync
