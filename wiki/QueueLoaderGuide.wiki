@@ -10,7 +10,6 @@ Here's a general guide to the features currently in QueueLoader
 *Basic Loading*
 {{{
 import com.hydrotik.utils.QueueLoader;
-import com.hydrotik.utils.QueueLoaderEvent;
 
 var _oLoader:QueueLoader = new QueueLoader();
 var img = new Sprite();
@@ -35,10 +34,10 @@ _oLoader.addItem("images/image2.jpg"), img2, {title:"Image 2"});
 _oLoader.addEventListener(QueueLoaderEvent.QUEUE_START, onQueueStart, false, 0, true);
 _oLoader.addEventListener(QueueLoaderEvent.ITEM_START, onItemStart, false, 0, true);
 _oLoader.addEventListener(QueueLoaderEvent.ITEM_PROGRESS, onItemProgress, false, 0, true);
-_oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_COMPLETE, onItemComplete,false, 0, true);
 _oLoader.addEventListener(QueueLoaderEvent.ITEM_ERROR, onItemError,false, 0, true);
 _oLoader.addEventListener(QueueLoaderEvent.QUEUE_PROGRESS, onQueueProgress, false, 0, true);
-_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_COMPLETE, onQueueComplete,false, 0, true);
 _oLoader.execute();
 
 //Listener functions
@@ -67,7 +66,7 @@ function onItemError(event:QueueLoaderEvent):void {
 	trace("\n>>"+event.message+"\n");
 }
 
-function onQueueInit(event:QueueLoaderEvent):void {
+function onQueueComplete(event:QueueLoaderEvent):void {
 	trace("\n>>"+event.message+"\n");
 }
 }}}
@@ -82,7 +81,7 @@ var _oLoader:QueueLoader = new QueueLoader();
 var img = new Sprite();
 addChild(img);
 _oLoader.addItem("images/image1.jpg"), img, {title:"Image ", mimeType:QueueLoader.FILE_IMAGE});
-_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_COMPLETE, onQueueComplete,false, 0, true);
 _oLoader.execute();
 }}}
 
@@ -98,7 +97,7 @@ _oLoader.addItem("includes/admin/test.xml", null, {title:"XML"});
 _oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
 _oLoader.execute();
 
-function onItemInit(event:QueueLoaderEvent):void {
+function onItemComplete(event:QueueLoaderEvent):void {
 	trace("\t>> XML: "+event.type, "item title: "+event.title);
 	if(event.filetype == QueueLoader.FILE_XML){
 		_xml = new XML(event.file);
@@ -115,10 +114,10 @@ var _oLoader:QueueLoader = new QueueLoader();
 var _css:StyleSheet = new StyleSheet();
 
 _oLoader.addItem("includes/admin/style.css", null, {title:"CSS"});
-_oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_COMPLETE, onItemComplete,false, 0, true);
 _oLoader.execute();
 
-function onItemInit(event:QueueLoaderEvent):void {
+function onItemComplete(event:QueueLoaderEvent):void {
 	if(event.filetype == QueueLoader.FILE_CSS){
 		trace("\t>> CSS: "+event.type, "item title: "+event.title);
 		_css.parseCSS(event.file);
@@ -139,10 +138,10 @@ addChild(externalImageContainer);
 
 var _oLoader:QueueLoader = new QueueLoader();
 _oLoader.addItem("flashassets/swf/externalimages.swf", externalImageContainer, {title:"externalimages", drawFrames:true});
-_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_COMPLETE, onQueueComplete,false, 0, true);
 _oLoader.execute();
 
-function onQueueInit(event:QueueLoaderEvent):void {
+function onQueueComplete(event:QueueLoaderEvent):void {
 	trace("** "+event.type);
 	// This passes a Bitmap object of the 2nd frame
 	// in the external swfstored in bmArray
@@ -167,11 +166,11 @@ addChild(soundSWF);
 var soundChannel:SoundChannel = new SoundChannel();
 
 _oLoader.addItem(prefix("") + "flashassets/swf/externalsounds.swf", soundSWF, {title:"sounds", drawSWF:false, mimeType:QueueLoader.FILE_SWF});
-_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_COMPLETE, onQueueComplete,false, 0, true);
 _oLoader.execute();
 
 
-function onQueueInit(event:QueueLoaderEvent):void {
+function onQueueComplete(event:QueueLoaderEvent):void {
 	trace("** "+event.type);
 	var Loop1Reference:Class = getDefinitionByName("Loop1") as Class;
 	var loop1:Sound = new Loop1Reference();
@@ -196,10 +195,10 @@ _oLoader.addItem("includes/admin/test.xml", null, {title:"XML", mimeType:QueueLo
 _oLoader.addEventListener(QueueLoaderEvent.QUEUE_START, onQueueStart, false, 0, true);
 _oLoader.addEventListener(QueueLoaderEvent.ITEM_START, onItemStart, false, 0, true);
 _oLoader.addEventListener(QueueLoaderEvent.ITEM_PROGRESS, onItemProgress, false, 0, true);
-_oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_COMPLETE, onItemComplete,false, 0, true);
 _oLoader.addEventListener(QueueLoaderEvent.ITEM_ERROR, onItemError,false, 0, true);
 _oLoader.addEventListener(QueueLoaderEvent.QUEUE_PROGRESS, onQueueProgress, false, 0, true);
-_oLoader.addEventListener(QueueLoaderEvent.QUEUE_INIT, onQueueInit,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.QUEUE_COMPLETE, onQueueComplete,false, 0, true);
 _oLoader.execute();
 
 function onQueueStart(event:QueueLoaderEvent):void {
@@ -218,7 +217,7 @@ function onQueueProgress(event:QueueLoaderEvent):void {
 	trace("\t>> "+event.type+": "+[" queuepercentage: "+event.queuepercentage]);
 }
 
-function onItemInit(event:QueueLoaderEvent):void {
+function onItemComplete(event:QueueLoaderEvent):void {
 	trace("\t>> "+event.type, "item title: "+event.title);
 	
 	if (event.filetype == QueueLoader.FILE_XML) {
@@ -237,7 +236,7 @@ function onItemError(event:QueueLoaderEvent):void {
 	trace("\n>>"+event.message+"\n");
 }
 
-function onQueueInit(event:QueueLoaderEvent):void {
+function onQueueComplete(event:QueueLoaderEvent):void {
 	trace("\t>> "+event.type, "item title: "+event.title);
 }
 }}}
