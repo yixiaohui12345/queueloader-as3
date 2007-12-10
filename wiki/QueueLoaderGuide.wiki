@@ -121,6 +121,30 @@ function onItemComplete(event:QueueLoaderEvent):void {
 }}}
 
 
+*Loading FLV into a VideoPlayer object*
+{{{
+import com.hydrotik.utils.QueueLoader;
+import com.hydrotik.utils.QueueLoaderEvent;
+
+var _oLoader:QueueLoader = new QueueLoader();
+var flvContainer:Sprite;
+addChild(flvContainer);
+
+_oLoader.addItem("flashassets/flv/test.flv", flvContainer, {title:"flv"});
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_COMPLETE, onItemComplete,false, 0, true);
+_oLoader.execute();
+
+
+// event.file:VideoPlayer
+function onItemComplete(event:QueueLoaderEvent):void {
+	trace("\t>> FLV: "+event.type, "item title: "+event.title);
+	if(event.filetype == QueueLoader.FILE_FLV){
+		event.file.play();
+	}
+}
+}}}
+
+
 *Drawing the frames of an external SWF to Bitmap Objects in an Array*
 {{{
 import com.hydrotik.utils.QueueLoader;
