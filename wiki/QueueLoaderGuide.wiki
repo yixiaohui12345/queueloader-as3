@@ -89,7 +89,7 @@ var _oLoader:QueueLoader = new QueueLoader();
 var _xml:XML;
 
 _oLoader.addItem("includes/admin/test.xml", null, {title:"XML"});
-_oLoader.addEventListener(QueueLoaderEvent.ITEM_INIT, onItemInit,false, 0, true);
+_oLoader.addEventListener(QueueLoaderEvent.ITEM_COMPLETE, onItemComplete,false, 0, true);
 _oLoader.execute();
 
 function onItemComplete(event:QueueLoaderEvent):void {
