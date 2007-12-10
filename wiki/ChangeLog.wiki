@@ -1,0 +1,19 @@
+#summary QueueLoader Change Log
+
+=QueueLoader Change Log=
+
+  * *03.08.2007* - *3.0* Initial port to AS3.0 (Donovan Adams)
+  * *03.16.2007* - *3.0.1* Added get method for data
+  * *08.10.2007* - *3.0.2* Rewrote data output using custom event QueueLoaderEvent class.
+  * *08.13.2007* - *3.0.3* Added QueueLoader progress and event.
+  * *08.14.2007* - *3.0.4* Added IO Error event.
+  * *09.10.2007* - *3.0.5* Fixed ITEM_INIT duped dispatching, changed item name to title to match custom event
+  * *09.14.2007* - *3.0.6* Added External mp3 and filetype cheking as well as direct access to file for easier swf access
+  * *10.29.2007* - *3.0.7* Added LoaderContext for accessing loaded class references/Added stopping of loading/Loader unloading of memory for Garbage Collection
+  * *10.29.2007* - *3.0.8* Added CSS/XML filetype, Optimized Loader, removeItemAt, function sorting
+  * *11.15.2007* - *3.0.9* Manual MIME type, pass dataObj, index based reordering, frame drawing of external swf
+  * *12.3.2007* - *3.0.10* Testing and formatting of frame drawing
+  * *12.5.2007* - *3.0.11* Stable Testing, Bandwidth Detection, CacheKilling
+  * *12.8.2007* - *3.0.12* Bandwidth fix with decimal rounding, Bandwidth Constuctor activiation. Event inits changed to complete to reflect internal structure
+  * *12.9.2007* - *3.0.13* Event output
+  * *12.9.2007* - *3.0.14* FLV Support using VideoPlayer, static debug access for compatibility.
