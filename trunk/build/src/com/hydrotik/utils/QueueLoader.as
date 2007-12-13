@@ -35,21 +35,14 @@ package com.hydrotik.utils {
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
-	import fl.video.VideoPlayer;
-	import fl.video.NCManager;
-	import fl.video.VideoEvent;	
 	import flash.display.BitmapData;	
 	import flash.geom.Matrix;		
 	import flash.utils.getTimer;	
 	import flash.system.Capabilities;	
 	import flash.utils.Timer;
 	import com.hydrotik.utils.QueueLoaderEvent;	
-	
-	[Event(name="ITEM_START", type="com.hydrotik.utils.QueueLoaderEvent")]
-	
-	[Event(name="ITEM_INIT", type="com.hydrotik.utils.QueueLoaderEvent")]
-	
-	[Event(name="COMPLETE", type="com.hydrotik.utils.QueueLoaderEvent")]
+    import flash.net.NetConnection;
+    import flash.net.NetStream;
 	
 	[Event(name="ITEM_START", type="com.hydrotik.utils.QueueLoaderEvent")]
 
@@ -64,11 +57,11 @@ package com.hydrotik.utils {
 	[Event(name="QUEUE_PROGRESS", type="com.hydrotik.utils.QueueLoaderEvent")]
 
 	[Event(name="QUEUE_COMPLETE", type="com.hydrotik.utils.QueueLoaderEvent")]
+	import flash.events.NetStatusEvent;	
 	
-
 	public class QueueLoader implements IEventDispatcher {
 		
-		public static const VERSION : String = "QueueLoader 3.0.18";
+		public static const VERSION : String = "QueueLoader 3.0.27";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
@@ -87,6 +80,8 @@ package com.hydrotik.utils {
 		public static const FILE_XML : int = 5;
 		
 		public static const FILE_FLV : int = 6;
+		
+		public static const FILE_QUEUE : int = 7;
 
 		private var _loader : *;
 
@@ -166,20 +161,23 @@ package com.hydrotik.utils {
 		
 		private var _bwChecking : Boolean;
 		
-		private var _forceNCManager:NCManager;
-
+		private var _nc:NetConnection;
+        
+        private var _ns:NetStream;
+        
 		/**
 		 * QueueLoader AS 3
 		 *
 		 * @author: Donovan Adams, E-Mail: donovan[(at)]hydrotik.com, url: http://www.hydrotik.com/<br>
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de<br><br>
-		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa
-		 * @version: 3.0.18
+		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa, Jesse Graupmann | www.justgooddesign.com | www.jessegraupmann.com
+		 * @version: 3.0.27
 		 *
 		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
-		 * @todo: bandwith decimal bug
+		 * @todo: Bandwith decimal bug
+		 * @todo: Add video events
 		 *
 		 * @history <a href="http://code.google.com/p/queueloader-as3/wiki/ChangeLog" target="blank">Up-To-Date Change Log Information here</a>
 		 *
@@ -315,7 +313,7 @@ package com.hydrotik.utils {
 		}
 		
 		
-		//TODO testing (Justin)
+		//	Justin -------------------------------------------------------
 		/**
 		 * @param index:Number - reorder index
 		 * @return void
@@ -350,6 +348,7 @@ package com.hydrotik.utils {
 				execute();
 			}
 		}
+		//	______________________________________________________________
 
 		/**
 		 * @description Executes the loading sequence
@@ -395,7 +394,10 @@ package com.hydrotik.utils {
 			}
 			_bmArray = null;
 			_loader = null;
-			
+			_ns.close();
+			_ns = null;
+			_nc.close();
+			_nc = null;
 			_bandwidth = _totalBytes = _max = _currFrame = _prevBytes = _currBytes = 0;
 			if(_bwChecking ) _bwTimer.removeEventListener(TimerEvent.TIMER, checkBandwidth);
 			//_bwTimer = null;
@@ -472,27 +474,7 @@ package com.hydrotik.utils {
 				_currBytes = event.bytesLoaded + _totalBytes;
 
 				dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_PROGRESS, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, event.bytesLoaded, event.bytesTotal, event.bytesLoaded / event.bytesTotal, _queuepercentage, 0, 0, "", _count, queuedItems.length, _max, _bmArray, currItem.info.dataObj, _bandwidth));
-				dispatchEvent(new QueueLoaderEvent(
-					QueueLoaderEvent.QUEUE_PROGRESS, //type : String, 
-					currItem.targ, //targ : *, 
-					_currFile, //file : *, 
-					currItem.url, //path : String = "",  
-					currItem.info.title, //title : String = "", 
-					_currType, //filetype : int = QueueLoader.FILE_IMAGE, 
-					event.bytesLoaded, //bytesLoaded : Number = -1, 
-					event.bytesTotal, //bytesTotal : Number = -1, 
-					event.bytesLoaded / event.bytesTotal, //percentage : Number = -1, 
-					_queuepercentage, //queuepercentage : Number = 0, 
-					0, //width : Number = 0, 
-					0, //height : Number = 0, 
-					"", //message : String = "", 
-					_count, //count : int = 0, 
-					queuedItems.length, //length : int = 0, 
-					_max, //max : int = 0, 
-					_bmArray, //bmArray : Array = null, 
-					currItem.info.dataObj, //dataObj : Object = null, 
-					_bandwidth //bandwidth:Number = 0, 
-				));
+				dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.QUEUE_PROGRESS, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, event.bytesLoaded, event.bytesTotal, event.bytesLoaded / event.bytesTotal, _queuepercentage, 0, 0, "", _count, queuedItems.length, _max, _bmArray, currItem.info.dataObj, _bandwidth));
 				
 				if(event.bytesLoaded / event.bytesTotal == 1){
 					_totalBytes += event.bytesLoaded;
@@ -501,14 +483,32 @@ package com.hydrotik.utils {
 		}
 		
 		
+		//	Jesse -------------------------------------------------------
+		private function itemErrorHandler(event:QueueLoaderEvent):void {
+			ioErrorHandler ( new IOErrorEvent (IOErrorEvent.IO_ERROR, event.bubbles, event.cancelable, event.message) );
+		}
+
+		private function queueProgressHandler(event:QueueLoaderEvent):void {
+			progressHandler ( new ProgressEvent (ProgressEvent.PROGRESS, event.bubbles, event.cancelable, event.bytesLoaded, event.bytesTotal ) );
+		}
 		
-		private function completeHandler(event : Event) : void {
+		private function queueCompleteHandler(event:QueueLoaderEvent):void {
+			completeHandler ( new Event (Event.COMPLETE, event.bubbles, event.cancelable ) );
+		}
+		//	______________________________________________________________
+		
+		
+		
+		private function completeHandler(event : Event = null) : void {
 			if(isLoading && !isStopped) {
 				if(_currType == FILE_XML) _currFile = event.target.data;
 				if(_currType == FILE_CSS) _currFile = event.target.data;
-				if(_currType == FILE_FLV) _currFile = _loader;
+				if(_currType == FILE_FLV){
+					_currFile = _ns;
+				}
 				
 				var checkSyncPoint : Boolean = false;
+				
 				if(_currType == FILE_IMAGE || _currType == FILE_SWF) {
 					loadedItems.push(event.target.loader.content);
 					_currFile = event.target.loader.content;
@@ -520,6 +520,9 @@ package com.hydrotik.utils {
 						drawSWFFrames();
 					}
 				}
+				
+				
+				
 				if(!checkSyncPoint) completeInit();
 			}
 		}
@@ -615,16 +618,32 @@ package com.hydrotik.utils {
 						_loader.load(request);
 						break;
 					case FILE_FLV:
-						_loader = new VideoPlayer();
-						_loader.addEventListener(VideoEvent.READY, completeHandler);
-						_loader.addEventListener(ProgressEvent.PROGRESS, progressHandler);
-						_loader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-			            _loader.load(currItem.url);
-			            currItem.targ.addChild(_loader);
+						_nc = new NetConnection();
+						_nc.connect(null);
+						_ns = new NetStream(_nc);
+						currItem.targ.attachNetStream(_ns);
+						_ns.play(currItem.url);
+						_ns.addEventListener(NetStatusEvent.NET_STATUS, netstat);
+						
+						var netClient:Object = new Object();
+						//TODO Add meta data event
+						netClient.onMetaData = function(meta:Object):void {
+						        if(VERBOSE) debug(meta.duration);
+						};
+						 
+						_ns.client = netClient;
 						break;
 						
-						
-						
+					//	Jesse -------------------------------------------------------
+					case FILE_QUEUE:
+						_loader = null;
+						var q:QueueLoader = currItem.targ as QueueLoader;
+						q.addEventListener(QueueLoaderEvent.ITEM_ERROR, itemErrorHandler,false, 0, true);
+						q.addEventListener(QueueLoaderEvent.QUEUE_PROGRESS, queueProgressHandler, false, 0, true);
+						q.addEventListener(QueueLoaderEvent.QUEUE_COMPLETE, queueCompleteHandler,false, 0, true);
+						q.execute();
+						break;
+					//	______________________________________________________________		
 					
 					default:
 						if(VERBOSE) debug(">> loadNextItem() NO TYPE DETECTED!");
@@ -632,10 +651,36 @@ package com.hydrotik.utils {
 					//request = null;
 			}	
 		}
+		
+		//TODO clean up and move to special features
+		private function netstat(event:NetStatusEvent):void{
+			if(VERBOSE) debug(event.info.code);
+			completeHandler();
+			//TODO Track events
+			 switch (event.info.code) {
+                case "NetConnection.Connect.Success":
+                    //connectStream();
+                    break;
+                case "NetStream.Play.StreamNotFound":
+                    trace("Stream not found: " + currItem.url);
+                    break;
+            }
+		}
+		
+		
+        
+        
 
 		// --== resets data ==--
 		private function reset() : void {
 			if(VERBOSE) debug(">> reset()");
+			if(_ns != null) _ns.close();
+			//	Jesse -------------------------------------------------------
+			if ( _currType == FILE_QUEUE ){
+				if ( currItem.targ != null ) currItem.targ.stop();
+			}
+			//	______________________________________________________________
+			
 			_count = 0;
 			//loadedItems = null;
 			_queuepercentage = 0;
