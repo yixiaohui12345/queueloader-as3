@@ -43,6 +43,7 @@ package com.hydrotik.utils {
 	import com.hydrotik.utils.QueueLoaderEvent;	
     import flash.net.NetConnection;
     import flash.net.NetStream;
+	import flash.events.NetStatusEvent;	
 	
 	[Event(name="ITEM_START", type="com.hydrotik.utils.QueueLoaderEvent")]
 
@@ -57,11 +58,10 @@ package com.hydrotik.utils {
 	[Event(name="QUEUE_PROGRESS", type="com.hydrotik.utils.QueueLoaderEvent")]
 
 	[Event(name="QUEUE_COMPLETE", type="com.hydrotik.utils.QueueLoaderEvent")]
-	import flash.events.NetStatusEvent;	
 	
 	public class QueueLoader implements IEventDispatcher {
 		
-		public static const VERSION : String = "QueueLoader 3.0.27";
+		public static const VERSION : String = "QueueLoader 3.0.29";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
@@ -172,7 +172,7 @@ package com.hydrotik.utils {
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de<br><br>
 		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa, Jesse Graupmann | www.justgooddesign.com | www.jessegraupmann.com
-		 * @version: 3.0.27
+		 * @version: 3.0.29
 		 *
 		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
@@ -385,6 +385,7 @@ package com.hydrotik.utils {
 			if(VERBOSE) debug(">> dispose()");
 			var i : int;
 			for(i = 0;i < loadedItems.length;i++) {
+				if(VERBOSE) debug("\t>> dispose() "+loadedItems[i]);
 				loadedItems[i].loaderInfo.loader.unload();
 				loadedItems[i] = null;
 			}
@@ -394,10 +395,15 @@ package com.hydrotik.utils {
 			}
 			_bmArray = null;
 			_loader = null;
-			_ns.close();
-			_ns = null;
-			_nc.close();
-			_nc = null;
+			if(_ns != null){
+				_ns.close();
+				_ns = null;
+			}
+			if(_nc != null){
+				_nc.close();
+				_nc = null;
+			}
+			if(VERBOSE) debug(">> dispose()");
 			_bandwidth = _totalBytes = _max = _currFrame = _prevBytes = _currBytes = 0;
 			if(_bwChecking ) _bwTimer.removeEventListener(TimerEvent.TIMER, checkBandwidth);
 			//_bwTimer = null;
