@@ -19,3 +19,4 @@
   * *12.9.2007* - *3.0.14* FLV Support using VideoPlayer, static debug access for compatibility.
   * *12.10.2007* - *3.0.18* SVN sync
   * *12.12.2007* - *3.0.27* FLV switched to NetStream, QueueLoader bundling (Jesse Graupmann)
+  * *12.15.2007* - *3.0.29* Dispose bug fixed as a result of FLV support
