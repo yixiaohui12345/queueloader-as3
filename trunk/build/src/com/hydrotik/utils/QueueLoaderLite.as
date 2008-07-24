@@ -25,7 +25,6 @@
 
 
 package com.hydrotik.utils {
-	
 	import flash.display.Loader;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -33,14 +32,11 @@ package com.hydrotik.utils {
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.net.URLRequest;
-	import flash.system.LoaderContext;	
-	import flash.utils.getTimer;	
-	import flash.system.Capabilities;	
-	import flash.utils.Timer;
-	import com.hydrotik.utils.QueueLoaderLiteEvent;	
-    import flash.net.NetConnection;
-    import flash.net.NetStream;
+	import flash.system.Capabilities;
+	import flash.system.LoaderContext;
 	
+	import com.hydrotik.utils.QueueLoaderLiteEvent;	
+
 	[Event(name="ITEM_START", type="com.hydrotik.utils.QueueLoaderLiteEvent")]
 
 	[Event(name="ITEM_PROGRESS", type="com.hydrotik.utils.QueueLoaderLiteEvent")]
@@ -57,7 +53,7 @@ package com.hydrotik.utils {
 	
 	public class QueueLoaderLite implements IEventDispatcher {
 		
-		public static const VERSION : String = "QueueLoaderLite 3.0.1";
+		public static const VERSION : String = "QueueLoaderLite 3.0.2";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
@@ -115,9 +111,9 @@ package com.hydrotik.utils {
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de<br><br>
 		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa, Jesse Graupmann | www.justgooddesign.com | www.jessegraupmann.com
-		 * @version: 3.0.31
+		 * @version: 3.0.2
 		 *
-		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
+		 * @description QueueLoaderLite is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
 		 * @todo: Bandwith decimal bug
 		 * @todo: Add video events
@@ -126,7 +122,7 @@ package com.hydrotik.utils {
 		 *
 		 * @example Go to <a href="http://code.google.com/p/queueloader-as3/wiki/QueueLoaderGuide" target="blank">QueueLoader Guide on Google Code</a> for more usage info. This example shows how to use QueueLoader in a basic application:
 		<code>
-		import com.hydrotik.utils.QueueLoader;
+		import com.hydrotik.utils.QueueLoaderLite;
 		import com.hydrotik.utils.QueueLoaderLiteEvent;
 							
 							
@@ -366,10 +362,10 @@ package com.hydrotik.utils {
                                         		
 		// --== Listeners and Handlers ==--
 		private function configureListeners(dispatcher : IEventDispatcher) : void {
-			dispatcher.addEventListener(Event.INIT, completeHandler, false, 0, true);
-			dispatcher.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
-			dispatcher.addEventListener(Event.OPEN, openHandler, false, 0, true);
-			dispatcher.addEventListener(ProgressEvent.PROGRESS, progressHandler, false, 0, true);
+			dispatcher.addEventListener(Event.COMPLETE, completeHandler);
+			dispatcher.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+			dispatcher.addEventListener(Event.OPEN, openHandler);
+			dispatcher.addEventListener(ProgressEvent.PROGRESS, progressHandler);
 		}
 
 		private function ioErrorHandler(event : IOErrorEvent) : void {
@@ -394,42 +390,43 @@ package com.hydrotik.utils {
 
 		private function progressHandler(event : ProgressEvent) : void { 
 			if (isLoading) {
-				_queuepercentage = (((_count * (100 / (_max))) + ((event.bytesLoaded / event.bytesTotal) * (100 / (_max)))) * .01);
-				dispatchEvent(new QueueLoaderLiteEvent(QueueLoaderLiteEvent.ITEM_PROGRESS, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, event.bytesLoaded, event.bytesTotal, event.bytesLoaded / event.bytesTotal, _queuepercentage, 0, 0, "", _count, queuedItems.length, _max, currItem.info.dataObj));
-				dispatchEvent(new QueueLoaderLiteEvent(QueueLoaderLiteEvent.QUEUE_PROGRESS, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, event.bytesLoaded, event.bytesTotal, event.bytesLoaded / event.bytesTotal, _queuepercentage, 0, 0, "", _count, queuedItems.length, _max, currItem.info.dataObj));
+				var delPerc:Number = Math.max(Math.min((((_count * (100 / (_max))) + ((event.bytesLoaded / event.bytesTotal) * (100 / (_max)))) * .01), 1), 0);
+				_queuepercentage = (!isNaN(delPerc) || delPerc != Infinity) ? delPerc : _queuepercentage;
+				dispatchEvent(new QueueLoaderLiteEvent(QueueLoaderLiteEvent.ITEM_PROGRESS, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, Math.abs(event.bytesLoaded), Math.abs(event.bytesTotal), Math.max(Math.min(Math.abs(event.bytesLoaded / event.bytesTotal), 1), 0), _queuepercentage, 0, 0, "", _count, queuedItems.length, _max, currItem.info.dataObj));
+				dispatchEvent(new QueueLoaderLiteEvent(QueueLoaderLiteEvent.QUEUE_PROGRESS, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, Math.abs(event.bytesLoaded), Math.abs(event.bytesTotal), Math.max(Math.min(Math.abs(event.bytesLoaded / event.bytesTotal), 1), 0), _queuepercentage, 0, 0, "", _count, queuedItems.length, _max, currItem.info.dataObj));
 			}
 		}
 		
 		
 		
 		private function completeHandler(event : Event = null) : void {
-			if(isLoading && !isStopped) {
+			//if(isLoading && !isStopped) {
 					loadedItems.push(event.target.loader.content);
 					_currFile = event.target.loader.content;
 					_w = event.target.width;
 					_h = event.target.height;
-				dispatchEvent(new QueueLoaderLiteEvent(QueueLoaderLiteEvent.ITEM_INIT, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 100, _queuepercentage, _w, _h, "", _count, queuedItems.length, _max, currItem.info.dataObj));
+				dispatchEvent(new QueueLoaderLiteEvent(QueueLoaderLiteEvent.ITEM_COMPLETE, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 100, _queuepercentage, _w, _h, "", _count, queuedItems.length, _max, currItem.info.dataObj));
 				_count++;
 				isQueueComplete();
-			}
+			//}
 		}
 
 		//--== checks for completion ==--
 		private function isQueueComplete() : void {
-			if (!isStopped) {		
+			//if (!isStopped) {		
 				if (queuedItems.length == 0) {
-					dispatchEvent(new QueueLoaderLiteEvent(QueueLoaderLiteEvent.QUEUE_INIT, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 0, _queuepercentage, 0, 0, "", _count, queuedItems.length, _max, currItem.info.dataObj));
+					dispatchEvent(new QueueLoaderLiteEvent(QueueLoaderLiteEvent.QUEUE_COMPLETE, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 0, _queuepercentage, 0, 0, "", _count, queuedItems.length, _max, currItem.info.dataObj));
 					isLoading = false;
 							//reset()
 				} else {
 					loadNextItem();
 				}			
-			}
+			//}
 		}
 
 		private function loadNextItem() : void {		
 			currItem = queuedItems.shift();		
-			if (!isStopped) {				
+			//if (!isStopped) {				
 				_currType = 0;
 				
 					if(currItem.url.match(".jpg") != null) _currType = FILE_IMAGE;
@@ -465,7 +462,7 @@ package com.hydrotik.utils {
 						if(VERBOSE) debug(">> loadNextItem() NO TYPE DETECTED!");
 				}
 				//request = null;
-			}	
+			//}	
 		}
 		
 		

@@ -36,7 +36,7 @@ package com.hydrotik.utils {
 
 		public static var ITEM_PROGRESS : String = "itemProgress";
 
-		public static var ITEM_INIT : String = "itemComplete";
+		public static var ITEM_COMPLETE : String = "itemComplete";
 
 		public static var ITEM_ERROR : String = "itemError";
 
@@ -44,7 +44,7 @@ package com.hydrotik.utils {
 
 		public static var QUEUE_PROGRESS : String = "queueProgress";
 
-		public static var QUEUE_INIT : String = "queueComplete";
+		public static var QUEUE_COMPLETE : String = "queueComplete";
 
 		// Public properties
 		public var targ : *;
