@@ -53,7 +53,7 @@ package com.hydrotik.utils {
 	
 	public class QueueLoaderLite implements IEventDispatcher {
 		
-		public static const VERSION : String = "QueueLoaderLite 3.0.2";
+		public static const VERSION : String = "QueueLoaderLite 3.0.5";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
@@ -102,8 +102,9 @@ package com.hydrotik.utils {
 		private var _h : int;
 
 		private var debug : Function;
+		
+		private var _cacheKiller : Boolean;
 
-        
 		/**
 		 * QueueLoader AS 3
 		 *
@@ -111,18 +112,15 @@ package com.hydrotik.utils {
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de<br><br>
 		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa, Jesse Graupmann | www.justgooddesign.com | www.jessegraupmann.com
-		 * @version: 3.0.2
+		 * @version: 3.0.5
 		 *
-		 * @description QueueLoaderLite is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
-		 *
-		 * @todo: Bandwith decimal bug
-		 * @todo: Add video events
+		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
 		 * @history <a href="http://code.google.com/p/queueloader-as3/wiki/ChangeLog" target="blank">Up-To-Date Change Log Information here</a>
 		 *
 		 * @example Go to <a href="http://code.google.com/p/queueloader-as3/wiki/QueueLoaderGuide" target="blank">QueueLoader Guide on Google Code</a> for more usage info. This example shows how to use QueueLoader in a basic application:
 		<code>
-		import com.hydrotik.utils.QueueLoaderLite;
+		import com.hydrotik.utils.QueueLoader;
 		import com.hydrotik.utils.QueueLoaderLiteEvent;
 							
 							
@@ -184,15 +182,16 @@ package com.hydrotik.utils {
 		 * @return	void
 		 * @description Contructor for QueueLoader
 		 */
-		public function QueueLoaderLite(ignoreErrors : Boolean = false, loaderContext : LoaderContext = null) {
+		public function QueueLoaderLite(ignoreErrors : Boolean = false, loaderContext : LoaderContext = null, cacheKiller:Boolean = false) {
 			dispatcher = new EventDispatcher(this);
 			debug = trace;
-			debug("============== new QueueLoader() version:"+VERSION + " - publish: "+(new Date()).toString());
+			debug("\n\n========== new QueueLoader() version:"+VERSION + " - publish: "+(new Date()).toString()+"==========\n\n");
 			reset();
 			_loaderContext = loaderContext;
 			_loader = new Loader();
 			loadedItems = new Array();
 			_ignoreErrors = ignoreErrors;
+			_cacheKiller = cacheKiller;
 		}
 
 		/**
@@ -429,13 +428,17 @@ package com.hydrotik.utils {
 			//if (!isStopped) {				
 				_currType = 0;
 				
-					if(currItem.url.match(".jpg") != null) _currType = FILE_IMAGE;
-					if(currItem.url.match(".gif") != null) _currType = FILE_IMAGE;
-					if(currItem.url.match(".png") != null) _currType = FILE_IMAGE;
-					if(currItem.url.match(".swf") != null) _currType = FILE_SWF;
+				if (currItem.url.match(".jpg") != null) _currType = FILE_IMAGE;
+				if (currItem.url.match(".JPG") != null) _currType = FILE_IMAGE;
+				if (currItem.url.match(".gif") != null) _currType = FILE_IMAGE;
+				if (currItem.url.match(".GIF") != null) _currType = FILE_IMAGE;
+				if (currItem.url.match(".png") != null) _currType = FILE_IMAGE;
+				if (currItem.url.match(".PNG") != null) _currType = FILE_IMAGE;
+				if (currItem.url.match(".swf") != null) _currType = FILE_SWF;
+				if (currItem.url.match(".SWF") != null) _currType = FILE_SWF;
 
 				
-				var request : URLRequest = new URLRequest(currItem.url);
+				var request : URLRequest = new URLRequest(currItem.url + ((!_cacheKiller) ? "" : cacheKiller()));
 				if(VERBOSE) debug(">> loadNextItem() loading: " + _currType);
 				switch (_currType) {
 					case FILE_IMAGE:
@@ -502,10 +505,6 @@ package com.hydrotik.utils {
 			} else {
 				return "?ck="+(new Date()).getTime().toString();
 			}
-		}
-		
-		private function round(nNumber:Number, decimal:Number = 1):Number {
-			return (new int(nNumber / decimal)) * decimal;
 		}
 	}
 }

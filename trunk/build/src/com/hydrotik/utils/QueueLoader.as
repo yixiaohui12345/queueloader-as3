@@ -63,7 +63,7 @@ package com.hydrotik.utils {
 
 	public class QueueLoader implements IEventDispatcher {
 
-		public static const VERSION : String = "QueueLoader 3.0.33";
+		public static const VERSION : String = "QueueLoader 3.0.34";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
@@ -177,7 +177,7 @@ package com.hydrotik.utils {
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de<br><br>
 		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa, Jesse Graupmann | www.justgooddesign.com | www.jessegraupmann.com
-		 * @version: 3.0.33
+		 * @version: 3.0.34
 		 *
 		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
@@ -511,7 +511,7 @@ package com.hydrotik.utils {
 
 		//	______________________________________________________________
 		private function completeHandler(event : Event = null) : void {
-			if(isLoading && !isStopped) {
+			//if(isLoading && !isStopped) {
 				if(_currType == FILE_XML) _currFile = event.target.data;
 				if(_currType == FILE_CSS || _currType == FILE_DEFAULT ) _currFile = event.target.data; 
 				// added "FILE_DEFAULT" | Jesse
@@ -537,7 +537,7 @@ package com.hydrotik.utils {
 					}
 				}
 				if(!checkSyncPoint) completeInit();
-			}
+			//}
 		}
 
 		private function completeInit() : void {
@@ -548,7 +548,7 @@ package com.hydrotik.utils {
 
 		//--== checks for completion ==--
 		private function isQueueComplete() : void {
-			if (!isStopped) {		
+			//if (!isStopped) {		
 				if (queuedItems.length == 0) {
 					if(_bwChecking ) _bwTimer.stop();
 					dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.QUEUE_COMPLETE, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 0, _queuepercentage, 0, 0, "", _count, queuedItems.length, _max, _bmArray, currItem.info.dataObj, _bandwidth));
@@ -560,12 +560,12 @@ package com.hydrotik.utils {
 				} else {
 					loadNextItem();
 				}			
-			}
+			//}
 		}
 
 		private function loadNextItem() : void {		
 			currItem = queuedItems.shift();		
-			if (!isStopped) {				
+			//if (!isStopped) {				
 				_currType = 0;
 				if(_setMIMEType) {
 					if(currItem.info.mimeType != undefined) {
@@ -690,7 +690,7 @@ package com.hydrotik.utils {
 						if(VERBOSE) debug(">> loadNextItem() NO TYPE DETECTED!");
 				}
 					//request = null;
-			}	
+			//}	
 		}
 
 		//TODO clean up and move to special features

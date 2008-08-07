@@ -24,7 +24,9 @@
  */
 
 package com.hydrotik.utils {
+	import fl.motion.easing.Quadratic;	
 	
+	import flash.media.SoundChannel;	
 	import flash.utils.Dictionary;
 	import flash.media.Sound;
 	//import flash.media.SoundChannel;
@@ -32,7 +34,10 @@ package com.hydrotik.utils {
 	import flash.media.SoundTransform;
 	import flash.events.Event;
 	import flash.utils.getQualifiedClassName;
-	import caurina.transitions.Tweener;
+	import com.hydrotik.go.HydroTween;
+
+	import fl.motion.easing.Linear;	
+	
 	//import flash.events.TimerEvent;
 	//import flash.utils.Timer;
 	//import flash.net.LocalConnection;
@@ -42,7 +47,7 @@ package com.hydrotik.utils {
 		 * SoundManager AS 3 Beta
 		 *
 		 * @author: Donovan Adams, E-Mail: donovan[(at)]hydrotik.com, url: http://blog.hydrotik.com/
-		 * @version: 0.0.2
+		 * @version: 0.0.3
 		 *
 		 * @description SoundManager is a Sound Management and playback utility for library assets.
 		 *
@@ -144,6 +149,15 @@ package com.hydrotik.utils {
 		public function getItem(snd:String):*{
 			return _sndArray[snd];
 		}
+
+		/**
+		 * @param	snd:String - Class definition
+		 * @return	* - Class reference
+		 * @description Get a sound
+		 */
+		public function getSoundChannel(snd:String):SoundChannel{
+			return _channelArray[snd];
+		}
 		
 		
 		/**
@@ -212,7 +226,7 @@ package com.hydrotik.utils {
 			_nextSequenceItem = "";
 			_xFadeNext = false;
 			for(var i:int = 0; i<_itemArray.length; i++){
-				Tweener.addTween(_channelArray[_itemArray[i]], {_sound_volume:0, time:t, transition:"linear", onComplete:stopAllComplete});
+				HydroTween.go(_channelArray[_itemArray[i]], {_volume:0}, t, 0, Linear.easeNone, stopAllComplete);
 			}
 			_isMuted = true;
 		}
@@ -258,9 +272,9 @@ package com.hydrotik.utils {
 		 * @return	void
 		 * @description Fade volume of a Sound
 		 */
-		public function fade(snd:String, vol:Number, t:Number = .5, ease:String = "linear"):void{
+		public function fade(snd:String, vol:Number, t:Number = .5, ease:Function = null):void{
 			try {
-				Tweener.addTween(_channelArray[snd], {_sound_volume:vol, time:t, transition:ease});
+				HydroTween.go(_channelArray[snd], {volume:vol}, t, 0, (ease == null) ? Linear.easeNone : ease);
 			}catch(e:Error) {
                 throw new Error("SoundManager: "+snd+" has not been loaded into the SoundManager.");
             }
@@ -273,9 +287,9 @@ package com.hydrotik.utils {
 		 * @return	void
 		 * @description Panning of the Sound
 		 */
-		public function pan(snd:String, pan:Number, t:Number = .5, ease:String = "linear"):void{
+		public function pan(snd:String, pan:Number, t:Number = .5, ease:Function = null):void{
 			try {
-				Tweener.addTween(_channelArray[snd], {_sound_pan:pan, time:t, transition:ease});
+				HydroTween.go(_channelArray[snd], {_panning:pan}, t, 0, (ease == null) ? Linear.easeNone : ease);
 			}catch(e:Error) {
                 throw new Error("SoundManager: "+snd+" has not been loaded into the SoundManager.");
             }
@@ -338,8 +352,8 @@ package com.hydrotik.utils {
 					if(_xFadeNext){
 						trace("\tauto: "+_currSequenceItem + " >< " + _nextSequenceItem);
 						play(_currSequenceItem, 0, .8, false);
-						fade(_currSequenceItem, 0, _sndArray[_currSequenceItem].length * .001, "easeinquad");
-						fade(_nextSequenceItem, .8, _sndArray[_nextSequenceItem].length * .001, "easeoutquad");
+						fade(_currSequenceItem, 0, _sndArray[_currSequenceItem].length * .001, Quadratic.easeIn);
+						fade(_nextSequenceItem, .8, _sndArray[_nextSequenceItem].length * .001, Quadratic.easeOut);
 					}else{
 						trace("\tauto: "+_nextSequenceItem);
 					}
@@ -357,8 +371,8 @@ package com.hydrotik.utils {
 				if(_seqArray[_currPos] != _seqArray[_currPos-1]){
 					trace("\tplaylist: "+_seqArray[_currPos-1] + " >< " + _seqArray[_currPos]);
 					play(_seqArray[_currPos], 0, 0, false);
-					fade(_seqArray[_currPos-1], 0, _sndArray[_seqArray[_currPos-1]].length * .001, "easeinquad");
-					fade(_seqArray[_currPos], .8, _sndArray[_seqArray[_currPos]].length * .001, "easeoutquad");
+					fade(_seqArray[_currPos-1], 0, _sndArray[_seqArray[_currPos-1]].length * .001, Quadratic.easeIn);
+					fade(_seqArray[_currPos], .8, _sndArray[_seqArray[_currPos]].length * .001, Quadratic.easeOut);
 				}else{
 					trace("\tplaylist: "+_seqArray[_currPos-1]);
 				}
@@ -379,7 +393,7 @@ package com.hydrotik.utils {
 		}
 		
 		private function soundCompleteHandler(event:Event):void {
-            trace(">> Sound Complete");
+            //trace(">> Sound Complete");
 			//_timer.stop();
         }
 		
