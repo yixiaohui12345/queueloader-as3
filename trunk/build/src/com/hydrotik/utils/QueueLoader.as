@@ -63,7 +63,7 @@ package com.hydrotik.utils {
 
 	public class QueueLoader implements IEventDispatcher {
 
-		public static const VERSION : String = "QueueLoader 3.0.34";
+		public static const VERSION : String = "QueueLoader 3.0.35";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
@@ -177,12 +177,10 @@ package com.hydrotik.utils {
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de<br><br>
 		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa, Jesse Graupmann | www.justgooddesign.com | www.jessegraupmann.com
-		 * @version: 3.0.34
+		 * @version: 3.0.35
 		 *
 		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
-		 * @todo: Bandwith decimal bug
-		 * @todo: Add video events
 		 *
 		 * @history <a href="http://code.google.com/p/queueloader-as3/wiki/ChangeLog" target="blank">Up-To-Date Change Log Information here</a>
 		 *
@@ -577,6 +575,7 @@ package com.hydrotik.utils {
 						//	______________________________________________________________
 					}
 				}else {
+					
 					if (currItem.url.match(".jpg") != null) _currType = FILE_IMAGE;
 					if (currItem.url.match(".JPG") != null) _currType = FILE_IMAGE;
 					if (currItem.url.match(".gif") != null) _currType = FILE_IMAGE;
@@ -598,6 +597,7 @@ package com.hydrotik.utils {
 					//	Jesse -------------------------------------------------------
 					if (_currType == 0 ) _currType = FILE_DEFAULT;
 					//	______________________________________________________________
+					if (currItem.info.mimeType != null) _currType = currItem.info.mimeType;
 				}
 				
 				if(currItem.info.cacheKiller != undefined && currItem.info.cacheKiller) {
