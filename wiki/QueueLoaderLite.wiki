@@ -1,4 +1,4 @@
-#summary QueueLoader intro
+#summary QueueLoaderLite intro
 
 = Introduction =
 
