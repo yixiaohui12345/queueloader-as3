@@ -63,7 +63,7 @@ package com.hydrotik.utils {
 
 	public class QueueLoader implements IEventDispatcher {
 
-		public static const VERSION : String = "QueueLoader 3.0.35";
+		public static const VERSION : String = "QueueLoader 3.0.36";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
@@ -177,7 +177,7 @@ package com.hydrotik.utils {
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de<br><br>
 		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa, Jesse Graupmann | www.justgooddesign.com | www.jessegraupmann.com
-		 * @version: 3.0.35
+		 * @version: 3.0.36
 		 *
 		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
@@ -574,6 +574,8 @@ package com.hydrotik.utils {
 						//dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_ERROR, currItem.targ, _currFile, currItem.url, currItem.info.title, _currType, 0, 0, 0, _queuepercentage, 0, 0, "QueueLoader error: " + currItem.info.title + " setMIMEType is set to true and no mime type for this item has been specified (example: QueueLoader.FILE_XML)", _count, queuedItems.length, _max, _bmArray, currItem.info.dataObj, _bandwidth));
 						//	______________________________________________________________
 					}
+				}else if (currItem.info.mimeType != null) {
+					_currType = currItem.info.mimeType;
 				}else {
 					
 					if (currItem.url.match(".jpg") != null) _currType = FILE_IMAGE;
@@ -592,12 +594,13 @@ package com.hydrotik.utils {
 					if (currItem.url.match(".CSS") != null) _currType = FILE_CSS;
 					if (currItem.url.match(".xml") != null) _currType = FILE_XML;
 					if (currItem.url.match(".XML") != null) _currType = FILE_XML;
+					if (currItem.url.match(".php") != null) _currType = FILE_XML;
+					if (currItem.url.match(".PHP") != null) _currType = FILE_XML;
 					if (currItem.url.match(".flv") != null) _currType = FILE_FLV;
 					if (currItem.url.match(".FLV") != null) _currType = FILE_FLV;
 					//	Jesse -------------------------------------------------------
 					if (_currType == 0 ) _currType = FILE_DEFAULT;
 					//	______________________________________________________________
-					if (currItem.info.mimeType != null) _currType = currItem.info.mimeType;
 				}
 				
 				if(currItem.info.cacheKiller != undefined && currItem.info.cacheKiller) {

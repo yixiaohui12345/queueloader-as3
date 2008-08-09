@@ -53,7 +53,7 @@ package com.hydrotik.utils {
 	
 	public class QueueLoaderLite implements IEventDispatcher {
 		
-		public static const VERSION : String = "QueueLoaderLite 3.0.5";
+		public static const VERSION : String = "QueueLoaderLite 3.0.6";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
@@ -109,23 +109,23 @@ package com.hydrotik.utils {
 		 * QueueLoader AS 3
 		 *
 		 * @author: Donovan Adams, E-Mail: donovan[(at)]hydrotik.com, url: http://www.hydrotik.com/<br>
-		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
+		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoaderLite on Google Code</a><br><br>
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de<br><br>
 		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa, Jesse Graupmann | www.justgooddesign.com | www.jessegraupmann.com
-		 * @version: 3.0.5
+		 * @version: 3.0.6
 		 *
-		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
+		 * @description QueueLoaderLite is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoaderLite, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
 		 * @history <a href="http://code.google.com/p/queueloader-as3/wiki/ChangeLog" target="blank">Up-To-Date Change Log Information here</a>
 		 *
 		 * @example Go to <a href="http://code.google.com/p/queueloader-as3/wiki/QueueLoaderGuide" target="blank">QueueLoader Guide on Google Code</a> for more usage info. This example shows how to use QueueLoader in a basic application:
 		<code>
-		import com.hydrotik.utils.QueueLoader;
+		import com.hydrotik.utils.QueueLoaderLite;
 		import com.hydrotik.utils.QueueLoaderLiteEvent;
 							
 							
 		//Instantiate the QueueLoader
-		var _oLoader:QueueLoader = new QueueLoader();
+		var _oLoader:QueueLoaderLite = new QueueLoaderLite();
 							
 		//Run a loop that loads 3 images from the flashassets/images/slideshow folder
 		var image:Sprite = new Sprite();
@@ -180,7 +180,7 @@ package com.hydrotik.utils {
 		 * @param	loaderContext:Allows access of a loaded SWF's class references
 		 * @param	setMIMEType:Allows manual setting of mime types for queue items		 
 		 * @return	void
-		 * @description Contructor for QueueLoader
+		 * @description Contructor for QueueLoaderLite
 		 */
 		public function QueueLoaderLite(ignoreErrors : Boolean = false, loaderContext : LoaderContext = null, cacheKiller:Boolean = false) {
 			dispatcher = new EventDispatcher(this);
@@ -251,7 +251,7 @@ package com.hydrotik.utils {
 		 * @return void
 		 * @description IN TESTING - reorders the queue based based on a specific position
 		 * 
-		 */
+		 *
 		public function reorder(index : Number) : void {
 			if(VERBOSE) debug(">> reorder() args:" + [index]);
 			var _closed : Boolean = false;
@@ -279,7 +279,7 @@ package com.hydrotik.utils {
 		
 				execute();
 			}
-		}
+		}*/
 		//	______________________________________________________________
 
 		/**
