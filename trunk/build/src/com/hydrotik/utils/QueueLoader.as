@@ -63,7 +63,7 @@ package com.hydrotik.utils {
 
 	public class QueueLoader implements IEventDispatcher {
 
-		public static const VERSION : String = "QueueLoader 3.0.37";
+		public static const VERSION : String = "QueueLoader 3.0.38";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
@@ -189,7 +189,7 @@ package com.hydrotik.utils {
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de<br><br>
 		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa, Jesse Graupmann | www.justgooddesign.com | www.jessegraupmann.com
-		 * @version: 3.0.37
+		 * @version: 3.0.38
 		 *
 		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoader, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
@@ -589,12 +589,12 @@ package com.hydrotik.utils {
 				}else if (currItem.info.mimeType != null) {
 					_currType = currItem.info.mimeType;
 				}else {
-					if (currItem.utl.match(IMAGE_PATTERN)) _currType = FILE_IMAGE;
-					if (currItem.utl.match(SWF_PATTERN)) _currType = FILE_SWF;
-					if (currItem.utl.match(AUDIO_PATTERN)) _currType = FILE_AUDIO;
-					if (currItem.utl.match(CSS_PATTERN)) _currType = FILE_CSS;
-					if (currItem.utl.match(XML_PATTERN)) _currType = FILE_XML;
-					if (currItem.utl.match(FLV_PATTERN)) _currType = FILE_FLV;
+					if (currItem.url.match(IMAGE_PATTERN)) _currType = FILE_IMAGE;
+					if (currItem.url.match(SWF_PATTERN)) _currType = FILE_SWF;
+					if (currItem.url.match(AUDIO_PATTERN)) _currType = FILE_AUDIO;
+					if (currItem.url.match(CSS_PATTERN)) _currType = FILE_CSS;
+					if (currItem.url.match(XML_PATTERN)) _currType = FILE_XML;
+					if (currItem.url.match(FLV_PATTERN)) _currType = FILE_FLV;
 					//	Jesse -------------------------------------------------------
 					if (_currType == 0 ) _currType = FILE_DEFAULT;
 					//	______________________________________________________________
@@ -659,11 +659,11 @@ package com.hydrotik.utils {
 						_loader.load(request);
 						break;
 					case FILE_FLV:
-						_nc = new NetConnection();
-						_nc.connect(null);
-						_ns = new NetStream(_nc);
-						currItem.targ.attachNetStream(_ns);
-						_ns.play(currItem.url);
+						var mnc:NetConnection = new NetConnection();
+						mnc.connect(null);
+						_ns = new NetStream(mnc);
+						//currItem.targ.attachNetStream(_ns);
+						//_ns.play(currItem.url);
 						_ns.addEventListener(NetStatusEvent.NET_STATUS, netstat);
 						
 						var netClient : Object = new Object();

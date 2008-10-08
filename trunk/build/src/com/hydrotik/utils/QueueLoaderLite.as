@@ -53,7 +53,7 @@ package com.hydrotik.utils {
 	
 	public class QueueLoaderLite implements IEventDispatcher {
 		
-		public static const VERSION : String = "QueueLoaderLite 3.0.8";
+		public static const VERSION : String = "QueueLoaderLite 3.0.9";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(at)]betriebsraum.de";
 
@@ -65,9 +65,9 @@ package com.hydrotik.utils {
 
 		public static const FILE_SWF : int = 2;
 		
-		public static var IMAGE_PATTERN:RegExp = /(\.jpg|\.png|\.gif)\z/i;
+		public static var IMAGE_PATTERN:RegExp;
 		
-		public static var SWF_PATTERN:RegExp = /\.swf\z/i;
+		public static var SWF_PATTERN:RegExp;
 
 		private var _loader : *;
 
@@ -118,7 +118,7 @@ package com.hydrotik.utils {
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoaderLite on Google Code</a><br><br>
 		 * @author: Based on Felix Raab's QueueLoader for AS2, E-Mail: f.raab[(at)]betriebsraum.de, url: http://www.betriebsraum.de<br><br>
 		 * @author	Project contributors: Justin Winter - justinlevi[(at)]gmail.com, Carlos Ulloa, Jesse Graupmann | www.justgooddesign.com | www.jessegraupmann.com
-		 * @version: 3.0.8
+		 * @version: 3.0.9
 		 *
 		 * @description QueueLoaderLite is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Please contact me if you make updates or enhancements to this file. If you use QueueLoaderLite, I'd love to hear about it. Special thanks to Felix Raab for the original AS2 version! Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
@@ -192,6 +192,10 @@ package com.hydrotik.utils {
 			dispatcher = new EventDispatcher(this);
 			debug = trace;
 			debug("\n\n========== new QueueLoader() version:"+VERSION + " - publish: "+(new Date()).toString()+"==========\n\n");
+			
+			IMAGE_PATTERN = /(\.jpg|\.png|\.gif)\z/i;
+			SWF_PATTERN = /\.swf\z/i;
+			
 			reset();
 			_loaderContext = loaderContext;
 			_loader = new Loader();
@@ -435,9 +439,12 @@ package com.hydrotik.utils {
 			//if (!isStopped) {				
 				_currType = 0;
 				
-				if (currItem.utl.match(IMAGE_PATTERN)) _currType = FILE_IMAGE;
-				if (currItem.utl.match(SWF_PATTERN)) _currType = FILE_SWF;
-
+				if (currItem.url.match(IMAGE_PATTERN)) _currType = FILE_IMAGE;
+				if (currItem.url.match(SWF_PATTERN)) _currType = FILE_SWF;
+				
+				
+				trace(_currType);
+				
 				
 				var request : URLRequest = new URLRequest(currItem.url + ((!_cacheKiller) ? "" : cacheKiller()));
 				if(VERBOSE) debug(">> loadNextItem() loading: " + _currType);
@@ -450,6 +457,7 @@ package com.hydrotik.utils {
 							configureListeners(_loader.contentLoaderInfo);
 							_loader.load(request, _loaderContext);
 							currItem.targ.addChild(_loader);
+							loaders.push(_loader);
 						}
 						break;
 					case FILE_SWF:
@@ -460,12 +468,13 @@ package com.hydrotik.utils {
 							configureListeners(_loader.contentLoaderInfo);
 							_loader.load(request, _loaderContext);
 							currItem.targ.addChild(_loader);
+							loaders.push(_loader);
 						}
 						break;
 					default:
 						if(VERBOSE) debug(">> loadNextItem() NO TYPE DETECTED!");
 				}
-				loaders.push(_loader);
+				
 				//request = null;
 			//}	
 		}
