@@ -27,7 +27,7 @@ package com.hydrotik.utils {
 	import flash.events.Event;
 
 	/**
-	 * Custom Event Class for QueueLoader
+	 * Custom Event Class for QueueLoaderLite
 	 */
 	public class QueueLoaderLiteEvent extends Event {
 
