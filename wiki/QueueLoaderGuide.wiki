@@ -781,9 +781,7 @@ function onQueueComplete(event:QueueLoaderEvent):void {
 
 
 
-*MP3 Loading Example*
-<a href="http://phobos.apple.com/WebObjects/MZStore.woa/wa/viewAlbum?id=58325849&s=143441" target="_blank"><img src="/wp-content/island.jpg" alt="Audio Sample" width="150" height="150" /></a><br>
-Audio taken from <a href="http://phobos.apple.com/WebObjects/MZStore.woa/wa/viewAlbum?id=58325849&s=143441" target="_blank">Islands of Chill</a>. This album is great!
+*MP3 Loading Example*!
 {{{
 //MP3 Loading Example
 
