@@ -216,7 +216,8 @@ function onQueueComplete(event:QueueLoaderEvent):void {
 
 function callDipose():void{
 	_oLoader.dispose();
-}}}}
+}
+}}}
 
 
 *Manually Setting File Type/URL Variable Example*
@@ -288,7 +289,8 @@ function onQueueProgress(event:QueueLoaderEvent):void {
 
 function onQueueComplete(event:QueueLoaderEvent):void {
 	trace("** "+event.type);
-}}}}
+}
+}}}
 
 
 *Drawing a SWF's Frames to BitmapData Array Example*
@@ -330,7 +332,8 @@ function onQueueProgress(event:QueueLoaderEvent):void {
 
 function onQueueComplete(event:QueueLoaderEvent):void {
 	trace("** "+event.type);
-}}}}
+}
+}}}
 
 
 *Ignoring of Errors/Error Handling Example*
@@ -433,7 +436,8 @@ function onQueueComplete(event:QueueLoaderEvent):void {
 
 function resumeLoad():void{
 	_oLoader.resume();
-}}}}
+}
+}}}
 
 
 *Bandwidth Detection Example*
