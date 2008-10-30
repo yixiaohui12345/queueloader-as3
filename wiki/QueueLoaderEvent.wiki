@@ -7,54 +7,57 @@ QueueLoaderEvent is a custom class used by QueueLoader to pass loading info and 
 *Public vars and contstants*
 {{{
 // Event types
-public static var ITEM_START : String = "itemStart";
+		public static var ITEM_START : String = "itemStart";
 
-public static var ITEM_PROGRESS : String = "itemProgress";
+		public static var ITEM_PROGRESS : String = "itemProgress";
 
-public static var ITEM_COMPLETE : String = "itemComplete";
+		public static var ITEM_COMPLETE : String = "itemComplete";
 
-public static var ITEM_ERROR : String = "itemError";
+		public static var ITEM_ERROR : String = "itemError";
 
-public static var QUEUE_START : String = "queueStart";
+		public static var ITEM_HTTP_STATUS : String = "itemHTTPStatus";
+		
+		public static var QUEUE_START : String = "queueStart";
 
-public static var QUEUE_PROGRESS : String = "queueProgress";
+		public static var QUEUE_PROGRESS : String = "queueProgress";
 
-public static var QUEUE_COMPLETE : String = "queueComplete";
+		public static var QUEUE_COMPLETE : String = "queueComplete";
 
-// Public properties
-public var targ : *;
 
-public var title : String = "";
+		// Public properties
+		public var container : *;
+		
+		public var targ : *;
 
-public var filetype : int;
+		public var content : *;
 
-public var file : *;
+		public var title : String = "";
 
-public var path : String;
+		public var fileType : int;
 
-public var bytesLoaded : Number = -1;
+		public var path : String;
 
-public var bytesTotal : Number = -1;	
+		public var bytesLoaded : Number = -1;
 
-public var percentage : Number = 0;
+		public var bytesTotal : Number = -1;	
 
-public var queuepercentage : Number = 0;
+		public var percentage : Number = 0;
 
-public var count : int;	
+		public var queuepercentage : Number = 0;
 
-public var length : int;
+		public var index : int;	
 
-public var max : int;
+		public var length : int;
+		
+		public var bandwidth:Number;
 
-public var width : Number;
+		public var width : Number;
 
-public var height : Number;
+		public var height : Number;
 
-public var message : String = "";
+		public var message : String = "";
 
-public var bmArray : Array;
+		public var bmArray : Array;
 
-public var dataObj : Object = null;
-
-public var bandwidth:Number;
+		public var info : Object = null;
 }}}
