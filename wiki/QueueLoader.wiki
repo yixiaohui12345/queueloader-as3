@@ -6,5 +6,5 @@ QueueLoader is an open source linear asset loading tool with progress monitoring
 
   * [QueueLoaderGuide Guide]
   * [ChangeLog Change Log]
-  * [http://code.google.com/p/queueloader-as3/source Source Downloads]
+  * [http://code.google.com/p/queueloader-as3/downloads/list Source Downloads]
   * [http://blog.hydrotik.com QueueLoader @ hydrotik]
