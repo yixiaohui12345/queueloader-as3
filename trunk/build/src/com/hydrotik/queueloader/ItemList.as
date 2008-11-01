@@ -25,7 +25,8 @@
 
 
 package com.hydrotik.queueloader {
-	import flash.utils.Dictionary;		import com.hydrotik.queueloader.items.*;	/**	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com	 */	public class ItemList {
+	import flash.utils.Dictionary;		import com.hydrotik.queueloader.items.*;	/**	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
+	 * @version: 3.1.1	 */	public class ItemList {
 		
 		public static var itemArray:Dictionary = new Dictionary();
 		

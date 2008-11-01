@@ -30,6 +30,7 @@ package com.hydrotik.queueloader {
 	
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
+	 * @version: 3.1.1
 	 */
 	public class QLManager {
 

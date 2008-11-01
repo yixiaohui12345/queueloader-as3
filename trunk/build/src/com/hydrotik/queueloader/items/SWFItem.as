@@ -39,6 +39,7 @@ package com.hydrotik.queueloader.items {
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
+	 * @version: 3.1.1
 	 */
 	public class SWFItem extends AbstractItem implements ILoadable {
 
