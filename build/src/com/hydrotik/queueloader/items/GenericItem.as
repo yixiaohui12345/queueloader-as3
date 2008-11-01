@@ -31,15 +31,14 @@ package com.hydrotik.queueloader.items {
 	import flash.events.ProgressEvent;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
-	import flash.net.URLStream;
 	import flash.system.LoaderContext;
 	
 	import com.hydrotik.queueloader.AbstractItem;
-	import com.hydrotik.queueloader.ILoadable;
-		
+	import com.hydrotik.queueloader.ILoadable;	
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
+	 * @version: 3.1.1
 	 */
 	public class GenericItem extends AbstractItem implements ILoadable {
 

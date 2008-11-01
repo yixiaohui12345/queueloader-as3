@@ -39,6 +39,7 @@ package com.hydrotik.queueloader.items {
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
+	 * @version: 3.1.1
 	 */
 	public class FLVItem extends AbstractItem implements ILoadable {
 
@@ -53,9 +54,6 @@ package com.hydrotik.queueloader.items {
 		protected var _netStatusFunction : Function = null;
 		
 		protected var _client:Object;
-		
-		//TODO add additional events
-		//TODO FIX COMPLETION AND PROGRESS EVENTS!
 		
 		public function FLVItem(path : URLRequest, container : *, info : Object, loaderContext : LoaderContext, fileType : int) {
 			super(path, container, info, loaderContext, fileType);
@@ -138,7 +136,7 @@ package com.hydrotik.queueloader.items {
 			}
 		}
 
-		function asyncErrorEventHandler(event : AsyncErrorEvent) : void {
+		private function asyncErrorEventHandler(event : AsyncErrorEvent) : void {
 			trace("Error = " + event.text);
 		}
 

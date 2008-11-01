@@ -27,7 +27,8 @@ package com.hydrotik.queueloader {
 	import flash.events.Event;
 
 	/**
-	 * Custom Event Class for QueueLoaderLite
+	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
+	 * @version: 3.1.1
 	 */
 	public class QueueLoaderEvent extends Event {
 
