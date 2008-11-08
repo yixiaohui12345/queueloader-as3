@@ -24,3 +24,5 @@
   * *08.01.2008* - *3.0.34* Fixed complete bug in IE with complete conditional checking.
   * *08.09.2008* - *3.0.36* Added individual MIME type designation and PHP loading of XML data. (soundstep.com)
   * *10.29.2008* - *3.1.0* Major changes and rewrite of class [http://blog.hydrotik.com/2008/10/29/queueloader-rev-31-major-update-usage/ Features and Usage]
+  * *11.02.2008* - *3.1.1* Fixed an error thrown in Flex 4 SDK in FLVItem.as
+  * *11.07.2008* - *3.1.2* Changed event.path to URLRequest type.
