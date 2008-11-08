@@ -24,11 +24,12 @@
  */
 
 package com.hydrotik.queueloader {
+	import flash.net.URLRequest;	
 	import flash.events.Event;
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.1
+	 * @version: 3.1.2
 	 */
 	public class QueueLoaderEvent extends Event {
 
@@ -61,7 +62,7 @@ package com.hydrotik.queueloader {
 
 		public var fileType : int;
 
-		public var path : String;
+		public var path : URLRequest;
 
 		public var bytesLoaded : Number = -1;
 
