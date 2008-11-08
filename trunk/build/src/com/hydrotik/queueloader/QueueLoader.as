@@ -43,9 +43,9 @@ package com.hydrotik.queueloader {
 	
 	public class QueueLoader implements IEventDispatcher {
 		
-		public static const VERSION : String = "QueueLoader 3.1.1";
+		public static const VERSION : String = "QueueLoader 3.1.2";
 
-		public static const AUTHOR : String = "Donovan Adams - donovan[(replace at)]hydrotik.com based on as2 version by Felix Raab - f.raab[(replace at)]betriebsraum.de";
+		public static const AUTHOR : String = "Donovan Adams - donovan[(replace at)]hydrotik.com";
 
 		public static var VERBOSE : Boolean = false;
 		
@@ -119,7 +119,7 @@ package com.hydrotik.queueloader {
 		 *
 		 * @author: Donovan Adams, E-Mail: donovan[(replace at)]hydrotik.com, url: http://blog.hydrotik.com/
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
-		 * @version: 3.1.1
+		 * @version: 3.1.2
 		 *
 		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. Please contact me if you make additions, updates, or enhancements to the package. If you use QueueLoader, I'd love to hear about it. Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *

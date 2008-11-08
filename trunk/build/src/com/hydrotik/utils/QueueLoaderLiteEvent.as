@@ -51,7 +51,7 @@ package com.hydrotik.utils {
 
 		public var title : String = "";
 
-		public var filetype : int;
+		public var fileType : int;
 
 		public var file : *;
 
@@ -79,13 +79,13 @@ package com.hydrotik.utils {
 
 		public var dataObj : Object = null;
 
-		public function QueueLoaderLiteEvent( type : String, targ : *, file : *, path : String = "",  title : String = "", filetype : int = QueueLoaderLite.FILE_IMAGE, bytesLoaded : Number = -1, bytesTotal : Number = -1, percentage : Number = -1, queuepercentage : Number = 0, width : Number = 0, height : Number = 0, message : String = "", count : int = 0, length : int = 0, max : int = 0, dataObj : Object = null, bubbles : Boolean = false, cancelable : Boolean = false) {
+		public function QueueLoaderLiteEvent( type : String, targ : *, file : *, path : String = "",  title : String = "", fileType : int = 1, bytesLoaded : Number = -1, bytesTotal : Number = -1, percentage : Number = -1, queuepercentage : Number = 0, width : Number = 0, height : Number = 0, message : String = "", count : int = 0, length : int = 0, max : int = 0, dataObj : Object = null, bubbles : Boolean = false, cancelable : Boolean = false) {
 			super(type, bubbles, cancelable);
 			this.targ = targ;
 			this.file = file;
 			this.path = path;
 			this.title = title;
-			this.filetype = filetype;
+			this.fileType = fileType;
 			this.bytesLoaded = bytesLoaded;
 			this.bytesTotal = bytesTotal;
 			this.percentage = percentage;

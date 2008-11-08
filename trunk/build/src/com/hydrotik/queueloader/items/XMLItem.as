@@ -38,7 +38,7 @@ package com.hydrotik.queueloader.items {
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.1
+	 * @version: 3.1.2
 	 */
 	public class XMLItem extends AbstractItem implements ILoadable {
 
