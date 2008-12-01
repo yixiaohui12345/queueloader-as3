@@ -26,3 +26,4 @@
   * *10.29.2008* - *3.1.0* Major changes and rewrite of class [http://blog.hydrotik.com/2008/10/29/queueloader-rev-31-major-update-usage/ Features and Usage]
   * *11.02.2008* - *3.1.1* Fixed an error thrown in Flex 4 SDK in FLVItem.as
   * *11.07.2008* - *3.1.2* Changed event.path to URLRequest type.
+  * *11.30.2008* - *3.1.3* Fixed width and height prop for SWF and Image items. Added autoPlay togglePause for FLV
