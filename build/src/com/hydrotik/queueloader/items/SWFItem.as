@@ -39,7 +39,7 @@ package com.hydrotik.queueloader.items {
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.2
+	 * @version: 3.1.3
 	 */
 	public class SWFItem extends AbstractItem implements ILoadable {
 
@@ -120,6 +120,8 @@ package com.hydrotik.queueloader.items {
 		protected override function preCompleteProcess(event:Event):void{
 			_target = event.target.loader;
 			_content = event.target.loader.content;
+			_width = _target.width;
+			_height = _target.height;
 			if(_center){
 				_target.x = -(_target.width/2);
 				_target.y = -(_target.height/2);
