@@ -39,7 +39,7 @@ package com.hydrotik.queueloader.items {
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.2
+	 * @version: 3.1.3
 	 */
 	public class FLVItem extends AbstractItem implements ILoadable {
 
@@ -113,7 +113,7 @@ package com.hydrotik.queueloader.items {
 		}
 
 		public function connectStream() : void {
-			_loader = new NetStream(_connection);
+			_content = _loader = new NetStream(_connection);
 			_loader.client = (_client != null) ? _client : new Object();
 			if(_asyncErrorFunction != null) _loader.addEventListener(AsyncErrorEvent.ASYNC_ERROR, _asyncErrorFunction);
 			_loader.addEventListener(NetStatusEvent.NET_STATUS, (_netStatusFunction != null) ? _netStatusFunction : netStatusHandler);
@@ -121,6 +121,7 @@ package com.hydrotik.queueloader.items {
 			_loader.play(_path.url);
 			_progressFunction(new ProgressEvent(ProgressEvent.PROGRESS, false, false, _loader.bytesTotal, _loader.bytesTotal));
 			_completeFunction(new Event(Event.COMPLETE));
+			if(!_autoPlay) NetStream(_loader).togglePause();
 		}
 		
 		/******* PRIVATE ********/
