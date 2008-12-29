@@ -39,7 +39,7 @@ package com.hydrotik.queueloader.items {
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.3
+	 * @version: 3.1.4
 	 */
 	public class FLVItem extends AbstractItem implements ILoadable {
 
@@ -119,8 +119,7 @@ package com.hydrotik.queueloader.items {
 			_loader.addEventListener(NetStatusEvent.NET_STATUS, (_netStatusFunction != null) ? _netStatusFunction : netStatusHandler);
 			_container.attachNetStream(_loader);
 			_loader.play(_path.url);
-			_progressFunction(new ProgressEvent(ProgressEvent.PROGRESS, false, false, _loader.bytesTotal, _loader.bytesTotal));
-			_completeFunction(new Event(Event.COMPLETE));
+			_container.addEventListener(Event.ENTER_FRAME,onEnterFrame);
 			if(!_autoPlay) NetStream(_loader).togglePause();
 		}
 		
@@ -135,10 +134,19 @@ package com.hydrotik.queueloader.items {
 					trace("Stream not found: " + _path.url);
 					break;
 			}
+			trace(asyncErrorEventHandler);
 		}
 
 		private function asyncErrorEventHandler(event : AsyncErrorEvent) : void {
 			trace("Error = " + event.text);
+		}
+		
+		private function onEnterFrame(event:Event):void{
+			_progressFunction(new ProgressEvent(ProgressEvent.PROGRESS, false, false, _loader.bytesLoaded, _loader.bytesTotal));
+			if (_loader.bytesLoaded == _loader.bytesTotal) {
+				_completeFunction(new Event(Event.COMPLETE));
+				_container.removeEventListener(Event.ENTER_FRAME,onEnterFrame);
+			}
 		}
 
 	}

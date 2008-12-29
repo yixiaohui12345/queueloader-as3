@@ -29,7 +29,7 @@ package com.hydrotik.queueloader {
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.3
+	 * @version: 3.1.4
 	 */
 	public class QueueLoaderEvent extends Event {
 
@@ -78,6 +78,8 @@ package com.hydrotik.queueloader {
 		
 		public var bandwidth:Number;
 
+		public var queueBytes:Number;
+
 		public var width : Number;
 
 		public var height : Number;
@@ -88,7 +90,7 @@ package com.hydrotik.queueloader {
 
 		public var info : Object = null;
 
-		public function QueueLoaderEvent( type : String, currItem:*, queuepercentage:Number, index:int, length:int, bandwidth:Number, bubbles : Boolean = false, cancelable : Boolean = false) {
+		public function QueueLoaderEvent( type : String, currItem:*, queuepercentage:Number, index:int, length:int, bandwidth:Number, queueBytes:Number, bubbles : Boolean = false, cancelable : Boolean = false) {
 			super(type, bubbles, cancelable);
 			this.container = (currItem.container == null) ? null : currItem.container;
 			this.targ = (currItem.target == null) ? null : currItem.target;
@@ -103,6 +105,7 @@ package com.hydrotik.queueloader {
 			this.index = index;
 			this.length = length;
 			this.bandwidth = bandwidth;
+			this.queueBytes = queueBytes;
 			this.width = (currItem.width == null) ? null : currItem.width;
 			this.height = (currItem.height == null) ? null : currItem.height;
 			this.message = (currItem.message == null) ? null : currItem.message;
