@@ -38,7 +38,7 @@ package com.hydrotik.queueloader.items {
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.3
+	 * @version: 3.1.4
 	 */
 	public class GenericItem extends AbstractItem implements ILoadable {
 
@@ -49,7 +49,11 @@ package com.hydrotik.queueloader.items {
 
 		public override function load() : void {
 			_loader = new URLLoader();
-			configureListeners();
+			_loader.addEventListener(Event.COMPLETE, preCompleteProcess);
+			_loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, _httpStatusFunction);
+			_loader.addEventListener(IOErrorEvent.IO_ERROR, _errorFunction);
+			_loader.addEventListener(Event.OPEN, _openFunction);
+			_loader.addEventListener(ProgressEvent.PROGRESS, _progressFunction);
 			_loader.load(_path);
 		}
 
@@ -98,13 +102,5 @@ package com.hydrotik.queueloader.items {
 			_completeFunction(event);
         }
         
-		/******* PRIVATE ********/
-		private function configureListeners() : void {
-			_loader.addEventListener(Event.COMPLETE, preCompleteProcess);
-			_loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, _httpStatusFunction);
-			_loader.addEventListener(IOErrorEvent.IO_ERROR, _errorFunction);
-			_loader.addEventListener(Event.OPEN, _openFunction);
-			_loader.addEventListener(ProgressEvent.PROGRESS, _progressFunction);
-		}
 	}
 }

@@ -43,7 +43,7 @@ package com.hydrotik.queueloader {
 	
 	public class QueueLoader implements IEventDispatcher {
 		
-		public static const VERSION : String = "QueueLoader 3.1.3";
+		public static const VERSION : String = "QueueLoader 3.1.4";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(replace at)]hydrotik.com";
 
@@ -119,7 +119,7 @@ package com.hydrotik.queueloader {
 		 *
 		 * @author: Donovan Adams, E-Mail: donovan[(replace at)]hydrotik.com, url: http://blog.hydrotik.com/
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
-		 * @version: 3.1.3
+		 * @version: 3.1.4
 		 *
 		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. Please contact me if you make additions, updates, or enhancements to the package. If you use QueueLoader, I'd love to hear about it. Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
@@ -173,7 +173,8 @@ package com.hydrotik.queueloader {
 		 */
 		public function addItemAt(index : Number, src : String, container : *, info : Object) : void {
 			if(VERBOSE) debug(">> addItemAt() args:" + [index, src, container, info]);
-			var fileType:int; var i:String;
+			var fileType:int;
+			var i:String;
 			var strip:Array = src.split("?");
 			var urlVars:String = "?";
 			if(strip.length > 1){
@@ -204,7 +205,7 @@ package com.hydrotik.queueloader {
 			if(VERBOSE) debug(">> loadXML() args:" + [xml]);
 			var xmlList:XMLList = xml..queueloader.item;
 			var prefix:String = xml..queueloader.@prefix;
-			for (var i : Number = 0; i < xmlList.length(); i++) {
+			for (var i : int = 0; i < xmlList.length(); i++) {
 				var src:String = ((prefix != "") ? prefix : "") + xmlList[i].@src;
 				var info:Object = {};
 				var container:DisplayObject = (scope != null) ? ((scope[xmlList[i].@container] != null) ? scope[xmlList[i].@container] : ((xmlList[i].@container == "this") ? scope : null)) : null;
@@ -299,22 +300,18 @@ package com.hydrotik.queueloader {
 		 */
 		public function execute() : void {
 			if(VERBOSE) debug(">> execute() "+[_isLoading, _bwTimer]);
-			if(!_isLoading){
-				_isLoading = true;	
-				if(_bwChecking ) _bwTimer.addEventListener(TimerEvent.TIMER, checkBandwidth);
-				_isComplete = false;	
-				
-				_index = 0;
-				_currItem = null;
-				_queuepercentage = 0;
-				_currBytes = 0;
-				_totalBytes = 0;
-				_bandwidth = 0;
-				_prevBytes = 0;
-				
-				
-				loadNextItem();
-			}
+			if(_isLoading) return;
+			_isLoading = true;	
+			if(_bwChecking ) _bwTimer.addEventListener(TimerEvent.TIMER, checkBandwidth);
+			_isComplete = false;	
+			_index = 0;
+			_currItem = null;
+			_queuepercentage = 0;
+			_currBytes = 0;
+			_totalBytes = 0;
+			_bandwidth = 0;
+			_prevBytes = 0;
+			loadNextItem();
 		}
 		
 		/**
@@ -323,11 +320,9 @@ package com.hydrotik.queueloader {
 		 */
 		public function stop() : void {
 			if(VERBOSE) debug(">> stop()");
-			if(_isLoading && !_isComplete){
-				//_loadingQueue[_index].stop();
-				_currItem.stop();
-				_isLoading = false;
-			}
+			if(!_isLoading && _isComplete) return;
+			_currItem.stop();
+			_isLoading = false;
 		}
 
 		/**
@@ -336,11 +331,9 @@ package com.hydrotik.queueloader {
 		 */
 		public function resume() : void {
 			if(VERBOSE) debug(">> stop()");
-			if(!_isLoading && !_isComplete){
-				//_loadingQueue[_index].stop();
-				_isLoading = true;
-				loadNextItem();
-			}
+			if(_isLoading && _isComplete) return;
+			_isLoading = true;
+			loadNextItem();
 		}
 		
 		/**
@@ -410,12 +403,12 @@ package com.hydrotik.queueloader {
 		
         public function httpStatusHandler(event:HTTPStatusEvent):void {
         	_currItem.message = event.status;
-			dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_HTTP_STATUS, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth));
+			dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_HTTP_STATUS, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth, _totalBytes));
         }
 
         public function ioErrorHandler(event:IOErrorEvent):void {
         	_currItem.message = event.text;
-			dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_ERROR, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth));
+			dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_ERROR, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth, _totalBytes));
         	if(_ignoreErrors){
         		_index++;
         		loadNextItem();
@@ -425,36 +418,35 @@ package com.hydrotik.queueloader {
         }
 
         public function openHandler(event:Event):void {
-			if(_index == 0) dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.QUEUE_START, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth));
+			if(_index == 0) dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.QUEUE_START, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth, _totalBytes));
 			if(_bwChecking ) _bwTimer.start();
-			dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_START, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth));
+			dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_START, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth, _totalBytes));
         }
 
         public function progressHandler(event:ProgressEvent):void {
-			_queuepercentage = (event.bytesLoaded * 100 / event.bytesTotal) / _loadingQueue.length + (_index * 100 / _loadingQueue.length);
-			_queuepercentage /= 100; 
-			_currBytes = event.bytesLoaded + _totalBytes;
+			_queuepercentage = ((event.bytesLoaded * 100 / event.bytesTotal) / _loadingQueue.length + (_index * 100 / _loadingQueue.length))/100;
+			_currBytes = _totalBytes + event.bytesLoaded;
 			
 			_currItem.bytesLoaded = event.bytesLoaded;
 			_currItem.bytesTotal = event.bytesTotal;
 			_currItem.progress = _currItem.bytesLoaded/_currItem.bytesTotal;
+            if(event.bytesLoaded / event.bytesTotal == 1) _totalBytes = _totalBytes + event.bytesLoaded;
 			
-            dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_PROGRESS, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth));
-			dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.QUEUE_PROGRESS, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth));
-            
-            if(event.bytesLoaded / event.bytesTotal == 1) _totalBytes += event.bytesLoaded;
+            dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_PROGRESS, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth, _totalBytes));
+			dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.QUEUE_PROGRESS, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth, _totalBytes));
         }
 
 		public function completeHandler(event:Event):void {
 			_currItem.isLoaded = true;
-			dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_COMPLETE, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth));
+			dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.ITEM_COMPLETE, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth, _totalBytes));
             _index++;
 			_currItem.deConfigureListeners();
             if(_index == _loadingQueue.length){
 	            _isLoading = false;
 	            if(_bwChecking ) _bwTimer.stop();
-				dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.QUEUE_COMPLETE, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth));
+				dispatchEvent(new QueueLoaderEvent(QueueLoaderEvent.QUEUE_COMPLETE, _currItem,  _queuepercentage, _index, _loadingQueue.length, _bandwidth, _totalBytes));
             	_isComplete = true;
+            	return;
             }else{
 				loadNextItem();
             }
@@ -485,11 +477,9 @@ package com.hydrotik.queueloader {
 		}
 		
 		protected function loadNextItem() : void {
-			if(_isLoading && !_isComplete){
-				_currItem = _loadingQueue[_index];
-				_currItem.registerItem(this);
-				_currItem.load();
-			}
+			if(!_isLoading && _isComplete) return;
+			_currItem = _loadingQueue[_index];
+			if(_currItem.registerItem(this)) _currItem.load();
 		}
 		   
 		protected function getMode():Boolean {

@@ -39,7 +39,7 @@ package com.hydrotik.queueloader.items {
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.3
+	 * @version: 3.1.4
 	 */
 	public class SWFItem extends AbstractItem implements ILoadable {
 
@@ -62,7 +62,11 @@ package com.hydrotik.queueloader.items {
 
 		public override function load() : void {
 			_loader = new Loader();
-			configureListeners();
+			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, preCompleteProcess);
+			_loader.contentLoaderInfo.addEventListener(HTTPStatusEvent.HTTP_STATUS, _httpStatusFunction);
+			_loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, _errorFunction);
+			_loader.contentLoaderInfo.addEventListener(Event.OPEN, _openFunction);
+			_loader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, _progressFunction);
 			_target = _loader;
 			_loader.load(_path, _loaderContext);
 		}
@@ -136,13 +140,6 @@ package com.hydrotik.queueloader.items {
 		}
 		
 		/******* PRIVATE ********/
-		private function configureListeners() : void {
-			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, preCompleteProcess);
-			_loader.contentLoaderInfo.addEventListener(HTTPStatusEvent.HTTP_STATUS, _httpStatusFunction);
-			_loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, _errorFunction);
-			_loader.contentLoaderInfo.addEventListener(Event.OPEN, _openFunction);
-			_loader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, _progressFunction);
-		}
 		
 		private function drawSWFFrames() : void {
 			_bmArray = new Array();
