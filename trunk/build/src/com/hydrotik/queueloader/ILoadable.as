@@ -26,7 +26,7 @@
 
 package com.hydrotik.queueloader {
 	import flash.net.URLRequest;			/**	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.4	 */	public interface ILoadable {
+	 * @version: 3.1.5	 */	public interface ILoadable {
 		
 		function get progress():Number;		function get bytesLoaded():Number;		function get bytesTotal():Number;		function get target():*;		function get container():*;		function get message():String;		function get path():URLRequest;		function get title():String;		function set index(i:int):void;		function get index():int;
 				function set isLoading(b:Boolean):void;		function get isLoading():Boolean;
