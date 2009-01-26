@@ -29,7 +29,7 @@ package com.hydrotik.queueloader {
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.4
+	 * @version: 3.1.5
 	 */
 	public class QueueLoaderEvent extends Event {
 

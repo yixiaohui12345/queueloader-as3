@@ -26,7 +26,7 @@
 
 package com.hydrotik.queueloader {
 	import flash.utils.Dictionary;		import com.hydrotik.queueloader.items.*;	/**	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.4	 */	public class ItemList {
+	 * @version: 3.1.5	 */	public class ItemList {
 		
 		public static var itemArray:Dictionary = new Dictionary();
 		
@@ -36,10 +36,10 @@ package com.hydrotik.queueloader {
 			itemArray[QueueLoader.FILE_SWF] = {classRef:SWFItem, regEx:/^.+\.((swf))/i};
 			itemArray[QueueLoader.FILE_XML] = {classRef:XMLItem, regEx:/^.+\.((xml))/i};
 			itemArray[QueueLoader.FILE_CSS] = {classRef:CSSItem, regEx:/^.+\.((css))/i};
-			itemArray[QueueLoader.FILE_MP3] = {classRef:MPSoundItem, regEx:/^.+\.((mp3)|(mp4))/i};
+			itemArray[QueueLoader.FILE_MP3] = {classRef:MPSoundItem, regEx:/^.+\.((mp3))/i};
 			itemArray[QueueLoader.FILE_ZIP] = {classRef:ZIPItem, regEx:/^.+\.((zip))/i};
 			itemArray[QueueLoader.FILE_WAV] = {classRef:PCMSoundItem, regEx:/^.+\.((wav))/i};
-			itemArray[QueueLoader.FILE_FLV] = {classRef:FLVItem, regEx:/^.+\.((flv)|(f4v))/i};
+			itemArray[QueueLoader.FILE_FLV] = {classRef:FLVItem, regEx:/^.+\.((flv)|(f4v)|(mp4)|(m4v)|(m4a)|(mov)|(3gp))/i};
 			itemArray[QueueLoader.FILE_GENERIC] = {classRef:GenericItem, regEx:/^.+\.((dae)|(txt)|(php)|(html))/i};
 			
 			return true;

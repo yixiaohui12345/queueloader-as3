@@ -43,7 +43,7 @@ package com.hydrotik.queueloader {
 	
 	public class QueueLoader implements IEventDispatcher {
 		
-		public static const VERSION : String = "QueueLoader 3.1.4";
+		public static const VERSION : String = "QueueLoader 3.1.5";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(replace at)]hydrotik.com";
 
@@ -140,7 +140,7 @@ package com.hydrotik.queueloader {
 			if(!_init) _init = ItemList.initItems();
 			dispatcher = new EventDispatcher(this);
 			debug = trace;
-			debug("\n\n========== new QueueLoader() version:"+VERSION + " - publish: "+(new Date()).toString()+"==========\n\n");
+			debug("\n\n========== new QueueLoader() version:"+VERSION + " - publish: "+(new Date()).toString()+"==========\nNOTE:Event listeners now default to strong references for AS3 consistency. For proper garbage collection be sure to add the true argument in the addListener function!\n\n");
 			init();
 			_isComplete  = false;
 			_loaderContext = loaderContext;
@@ -381,7 +381,7 @@ package com.hydrotik.queueloader {
 		
 		
 		// --== Implemented interface methods ==--
-		public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = true) : void {
+		public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void {
 			dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 
