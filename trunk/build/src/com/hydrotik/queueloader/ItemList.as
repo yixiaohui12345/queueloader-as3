@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2008 (c) Donovan Adams, http://blog.hydrotik.com/
+ * Copyright 2007-2009 (c) Donovan Adams, http://blog.hydrotik.com/
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +26,7 @@
 
 package com.hydrotik.queueloader {
 	import flash.utils.Dictionary;		import com.hydrotik.queueloader.items.*;	/**	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.5	 */	public class ItemList {
+	 * @version: 3.1.6	 */	public class ItemList {
 		
 		public static var itemArray:Dictionary = new Dictionary();
 		
