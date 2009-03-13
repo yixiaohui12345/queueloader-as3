@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2007-2008 (c) Donovan Adams, http://blog.hydrotik.com/
+ * Copyright 2007-2009 (c) Donovan Adams, http://blog.hydrotik.com/
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -43,7 +43,7 @@ package com.hydrotik.queueloader {
 	
 	public class QueueLoader implements IEventDispatcher {
 		
-		public static const VERSION : String = "QueueLoader 3.1.5";
+		public static const VERSION : String = "QueueLoader 3.1.6";
 
 		public static const AUTHOR : String = "Donovan Adams - donovan[(replace at)]hydrotik.com";
 
@@ -119,7 +119,7 @@ package com.hydrotik.queueloader {
 		 *
 		 * @author: Donovan Adams, E-Mail: donovan[(replace at)]hydrotik.com, url: http://blog.hydrotik.com/
 		 * @author: Project home: <a href="http://code.google.com/p/queueloader-as3/" target="blank">QueueLoader on Google Code</a><br><br>
-		 * @version: 3.1.4
+		 * @version: 3.1.6
 		 *
 		 * @description QueueLoader is an open source linear asset loading tool with progress monitoring. Please contact me if you make additions, updates, or enhancements to the package. If you use QueueLoader, I'd love to hear about it. Please contact me if you find any errors or bugs in the class or documentation or if you would like to contribute.
 		 *
@@ -181,16 +181,19 @@ package com.hydrotik.queueloader {
 				var hash:Array = strip[1].split("&");
 				for(var v:int = 0; v<hash.length; v++){
 					var pairs:Array = hash[v].split("=");
-					urlVars = urlVars + pairs[0] + "=" + pairs[1] + "&";
+					urlVars = urlVars + pairs[0] + "=" + pairs[1];
+					if (hash.length-1!=v) urlVars += "&";
 				}
 			}
 			if(info.cacheKiller != null) urlVars = urlVars + "cache=" + (new Date()).getTime().toString();
+			var urlReq:URLRequest;
 			if(info.mimeType == null){
 				for(i in ItemList.itemArray) if(strip[0].search(ItemList.itemArray[int(i)].regEx) != -1) fileType = int(i);
+				urlReq = new URLRequest(strip[0] + ((getMode() && urlVars.length > 1) ? urlVars : ""));
 			}else{
 				fileType = info.mimeType;
+				urlReq = new URLRequest(strip[0] + ((urlVars.length > 1) ? urlVars : ""));
 			}
-			var urlReq:URLRequest = new URLRequest(strip[0] + ((getMode() && urlVars.length > 1) ? urlVars : ""));
 			for(i in ItemList.itemArray) if(int(i)==fileType) _loadingQueue.splice(index, 0, new (ItemList.itemArray[int(i)].classRef)(urlReq, container, info, _loaderContext, int(i)) as ILoadable);
 			
 		}
