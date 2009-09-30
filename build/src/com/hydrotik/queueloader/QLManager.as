@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2007-2009 (c) Donovan Adams, http://blog.hydrotik.com/
  *
  * Permission is hereby granted, free of charge, to any person
@@ -25,27 +25,25 @@
  
  
 package com.hydrotik.queueloader {
-	
 	import flash.utils.Dictionary;	
-	
+
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.6
+	 * @version: 3.1.7
 	 */
 	public class QLManager {
 
 		private static var _queues : Dictionary = new Dictionary(true);
 
-		public static function addQueue(id:String, queue:QueueLoader):Boolean {
+		public static function addQueue(id : String, queue : IQueueLoader) : Boolean {
 			for (var i:String in _queues) if (i == id) return false;
 			_queues[id] = queue;
 			return true;
 		}
 
-		public static function removeQueue(id:String):Boolean {
+		public static function removeQueue(id : String) : Boolean {
 			for (var i:String in _queues) {
 				if (i == id) {
-					trace(i + " - " + _queues[i]);
 					_queues[i] = null;
 					delete _queues[i];
 					i == null;
@@ -55,26 +53,26 @@ package com.hydrotik.queueloader {
 			return false;
 		}
 
-		public static function getQueue(id:String):QueueLoader{
+		public static function getQueue(id : String) : IQueueLoader {
 			for (var i:String in _queues) if (i == id) return _queues[i];
 			return null;
 		}
-	
 
-		public static function traceClassList():void{
+		
+		public static function traceClassList() : void {
 			for (var i:String in _queues) {
 				trace(i + " - " + _queues[i]);
 			}
 		}
-		
-		public static function length():int {
-			var len:int = 0;
+
+		public static function length() : int {
+			var len : int = 0;
 			for (var i:String in _queues) len++;
 			return len;
 			trace(i);
 		}
-		
-		public static function disposeAll():void{
+
+		public static function disposeAll() : void {
 			for (var i:String in _queues) _queues[i].dispose();
 		}
 	}

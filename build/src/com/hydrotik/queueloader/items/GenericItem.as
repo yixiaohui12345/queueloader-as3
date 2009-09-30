@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2007-2009 (c) Donovan Adams, http://blog.hydrotik.com/
  *
  * Permission is hereby granted, free of charge, to any person
@@ -38,7 +38,7 @@ package com.hydrotik.queueloader.items {
 
 	/**
 	 * @author Donovan Adams | Hydrotik | http://blog.hydrotik.com
-	 * @version: 3.1.6
+	 * @version: 3.1.7
 	 */
 	public class GenericItem extends AbstractItem implements ILoadable {
 
