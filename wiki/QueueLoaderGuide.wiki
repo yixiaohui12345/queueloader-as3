@@ -1,7 +1,5 @@
-#summary QueueLoader usage guide
 #labels Featured
-
-=QueueLoader Guide=
+*<a href="http://wiki.github.com/hydrotik/QueueLoader" target="_blank">QueueLoader has moved and is now most current on GitHub</a> I will still keep a current download of the latest rev in the download section*
 
 *Overall Monitoring/Basic Example*
 {{{
