@@ -2,9 +2,6 @@
 
 = Introduction =
 
-QueueLoaderLite is an open source linear asset loading tool with progress monitoring. It's largely used to load a sequence of images or a set of external assets in one step. Based on QueueLoader, QueueLoaderLite functions in the same way but is simplified to load only images and swf files for a smaller file size. Ideal for using your own separate loaders for data and when advanced control is not needed.
+QueueLoaderLite has been deprecated as QueueLoader can be made into a lite version by removing loadable items
 
-  * [QueueLoaderGuide Guide]
-  * [ChangeLog Change Log]
-  * [http://code.google.com/p/queueloader-as3/source Source Downloads]
-  * [http://blog.hydrotik.com QueueLoader @ hydrotik]
+*<a href="http://wiki.github.com/hydrotik/QueueLoader" target="_blank">QueueLoader has moved and is now most current on GitHub</a> I will still keep a current download of the latest rev in the download section*
