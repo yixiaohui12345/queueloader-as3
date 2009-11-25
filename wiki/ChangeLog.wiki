@@ -1,3 +1,5 @@
+*<a href="http://wiki.github.com/hydrotik/QueueLoader" target="_blank">QueueLoader has moved and is now most current on GitHub</a> I will still keep a current download of the latest rev in the download section*
+
 * *03.08.2007* - *3.0* Initial port to AS3.0 (Donovan Adams)
   * *03.16.2007* - *3.0.1* Added get method for data
   * *08.10.2007* - *3.0.2* Rewrote data output using custom event QueueLoaderEvent class.
